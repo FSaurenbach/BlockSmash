@@ -1,14 +1,16 @@
 import korlibs.image.color.*
 import korlibs.korge.view.*
-import korlibs.korge.view.align.*
 import korlibs.math.geom.*
 
-fun Container.field() = Field().addTo(this)
+fun Container.field(realX: Int, realY: Int, fieldX: Int, fieldY: Int) = Field(realX, realY, fieldX, fieldY).addTo(this)
 
-class Field : Container() {
+class Field(var realX: Int, var realY: Int, var fieldX: Int, var fieldY: Int) : Container() {
+
 
     init {
-        roundRect(Size(480, 480), RectCorners(5f), fill = Colors.BLUE).centerOnStage()
-
+        roundRect(Size(cs, cs), RectCorners(5f), fill = Colors["#35385c"]).position(realX, realY)
     }
+
+
 }
+

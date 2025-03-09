@@ -4,40 +4,32 @@ import korlibs.image.text.*
 import korlibs.io.async.ObservableProperty
 import korlibs.io.file.std.*
 import korlibs.korge.*
+import korlibs.korge.input.*
 import korlibs.korge.service.storage.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
+import kotlin.Number
 import kotlin.properties.*
 
 var cellSize: Float = 0f
-var fieldSize: Float = 0f
-var leftIndent: Float = 0f
-var topIndent: Float = 0f
 var font: BitmapFont by Delegates.notNull()
 
-fun columnX(number: Int) = leftIndent + 10 + (cellSize + 10) * number
-fun rowY(number: Int) = topIndent + 10 + (cellSize + 10) * number
-
-var map = PositionMap()
+var backgroundField:RoundRect? = null
 val blocks = mutableMapOf<Int, Block>()
 var history: History by Delegates.notNull()
-
-fun numberFor(blockId: Int) = blocks[blockId]!!.number
-fun deleteBlock(blockId: Int) = blocks.remove(blockId)!!.removeFromParent()
 
 val score = ObservableProperty(0)
 val best = ObservableProperty(0)
 
-var freeId = 0
-var isAnimationRunning = false
-var isGameOver = false
-
+var fieldSize = Size(560, 560)
+var cs = fieldSize.height / 8
+var backgroundFieldSize = Size(fieldSize.width+10f, fieldSize.height+10f)
 suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
     title = "Block Smash",
-    bgcolor = RGBA(253, 247, 240),
+    bgcolor = Colors["#5a78c5"],
     /**
     `gameId` is associated with the location of storage, which contains `history` and `best`.
     see [Views.realSettingsFolder]
@@ -59,9 +51,11 @@ suspend fun main() = Korge(
     best.observe {
         storage["best"] = it.toString()
     }
-
-    var field = field()
-
+    backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
+    backgroundField!!.centerOnStage()
+    backgroundField!!.y -= 70
+    convertX(5)
+    populateField(this)
 
     val bgBest = roundRect(Size(cellSize * 1.5, cellSize * 0.8), RectCorners(5f), fill = Colors["#bbae9e"]) {
         centerXOnStage()
@@ -101,3 +95,23 @@ suspend fun main() = Korge(
 
 }
 
+fun populateField(container: Container){
+    for (x in 0..7){
+        for (y in 0..7){
+            var f =container.field(convertX(x).toInt(), convertY(y).toInt(), x,y)
+            f.onClick {
+                println("YOU CLICKED ON ${f.fieldX} ${f.fieldY}, with the real coords: ${f.realX} ${f.realY}")
+            }
+        }
+    }
+}
+
+
+fun convertX(p:Int): Number {
+    val x = backgroundField!!.x
+    return x+cs*p
+}
+fun convertY(p:Int): Number {
+    val y = backgroundField!!.y
+    return y+cs*p
+}
