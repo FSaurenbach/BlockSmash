@@ -35,7 +35,7 @@ suspend fun main() = Korge(
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
     backgroundField!!.centerOnStage()
     backgroundField!!.y -= 70
-    convertRealX(5)
+    convertToRealX(5)
     populateField(this)
 
     var testBlock = block(Colors["#ff0008"]).centerXOnStage()
@@ -48,23 +48,27 @@ suspend fun main() = Korge(
 fun populateField(container: Container) {
     for (x in 0..7) {
         for (y in 0..7) {
-            val f = container.field(convertRealX(x).toInt(), convertRealY(y).toInt(), x, y)
+            val f = container.field(convertToRealX(x).toInt(), convertToRealY(y).toInt(), x, y)
             f.onClick {
                 println("YOU CLICKED ON ${f.fieldX} ${f.fieldY}, with the real coords: ${f.realX} ${f.realY}")
+                println("Converted to realX: ${convertToCoordX(f.fieldX)}, realY: ${convertToCoordY(f.fieldY)}")
             }
         }
     }
 }
 
 
-fun convertRealX(fieldCoordinate: Int): Number {
+fun convertToRealX(fieldCoordinate: Int): Number {
     return backgroundField!!.x + cs * fieldCoordinate
 }
 
-fun convertRealY(fieldCoordinate: Int): Number {
+fun convertToRealY(fieldCoordinate: Int): Number {
     return backgroundField!!.y + cs * fieldCoordinate
 }
 
-fun convertXPosition(p:Double):Number{
-    return
+fun convertToCoordX(realX:Int):Number{
+    return realX/cs - backgroundField!!.x
+}
+fun convertToCoordY(realY:Int): Number{
+    return realY/cs - backgroundField!!.y
 }
