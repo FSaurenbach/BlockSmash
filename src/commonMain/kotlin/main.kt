@@ -45,28 +45,25 @@ suspend fun main() = Korge(
             println("dragging ended: snapping!")
             println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
 
-            var blockPosition1 = Point(round(it.view.globalPos.x), round(it.view.globalPos.y))
+            var blockPosition1 = Point(convertToCoordX(round(it.view.globalPos.x).toInt()).toInt(), convertToCoordY(round(it.view.globalPos.y).toInt()).toInt())
             for (field in fields) {
-                var fieldPosition = Point(round(field.globalPos.x), round(field.globalPos.y))
-                println("Block position converted ${convertToCoordX(blockPosition1.x.toInt())}, ${convertToCoordY(blockPosition1.y.toInt())}")
-                println("Field position converted ${convertToCoordX(fieldPosition.x.toInt())}, ${convertToCoordY(fieldPosition.y.toInt())}")
+                var fieldPosition = Point(convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(round(field.globalPos.y).toInt()).toInt())
+
+                //println("Block position converted ${blockPosition1.x}, ${blockPosition1.y}")
+                //println("Field position converted ${fieldPosition.x}, ${fieldPosition.y}")
 
                 if (blockPosition1 == fieldPosition){
                     it.view.position(field.globalPos)
-                    println(blockPosition1)
-                    println(field.globalPos)
-                    println("found a block with the same x&y")
+                    println("Snapping block to: $fieldPosition")
                 }
 
 
             }
         }
     }
-    testBlock.onClick {
-        println("af")
-    }
 
 }
+
 
 fun populateField(container: Container) {
     for (x in 0..7) {
