@@ -8,7 +8,8 @@ class Field(var realX: Int, var realY: Int, var fieldX: Int, var fieldY: Int) : 
 
 
     init {
-        roundRect(Size(cs, cs), RectCorners(5f), fill = Colors["#35385c"]).position(realX, realY)
+        roundRect(Size(cs, cs), RectCorners(5f), fill = Colors["#35385c"])
+        this.position(realX, realY)
     }
 
 

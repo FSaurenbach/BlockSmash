@@ -10,7 +10,7 @@ fun Container.block(color: RGBA) = Block(color).addTo(this)
 class Block(color: ColorPaint) : Container() {
     var draggable: Boolean = true
     init {
-        roundRect(Size(cs, cs), RectCorners(5f), fill = color).draggable {  }
+        roundRect(Size(cs, cs), RectCorners(5f), fill = color)
 
     }
 }
