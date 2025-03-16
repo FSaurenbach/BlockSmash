@@ -37,7 +37,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.TWObyTWO -> twobytwo(theWhole)
             else -> println("ERROR")
         }
-        this.draggableCloseable {
+        var closeable:DraggableCloseable? = null
+        closeable = this.draggableCloseable {
 
             if (it.end) {
                 println("dragging ended: snapping!")
@@ -62,7 +63,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         println("Placed correctly snapping:")
                         it.view.position(field.globalPos)
                         placed = true
-
+                        closeable!!.close()
 
 
                     }
