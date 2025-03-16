@@ -5,7 +5,9 @@ import korlibs.math.geom.*
 enum class BlockType{
     ONEbyONE, TWObyTWO, BigL
 }
-
+enum class StartPosition{
+    LEFT, MIDDLE, RIGHT
+}
 
 object BlockColors {
     val Black get() = Colors["#141414"]
@@ -13,13 +15,17 @@ object BlockColors {
     val Red get() = Colors["#911100"]
 }
 
-fun Container.block(color: RGBA, blockType: BlockType) = Block(color, blockType).addTo(this)
+fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition) = Block(color, blockType, startPosition).addTo(this)
 
-class Block(private var color: RGBA, blockType: BlockType) : Container() {
-    var draggable: Boolean = true
+class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
+    var placed: Boolean = true
     init {
         val theWhole = container()
-        this.position(200, 650)
+        when (startPosition){
+            StartPosition.LEFT -> this.position(0,680)
+            StartPosition.MIDDLE -> this.position(200, 680)
+            StartPosition.RIGHT -> this.position(400, 680)
+        }
         when (blockType){
             BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
             BlockType.TWObyTWO -> twobytwo(theWhole)

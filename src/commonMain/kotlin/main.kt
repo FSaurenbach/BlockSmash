@@ -11,12 +11,13 @@ import kotlin.math.*
 import kotlin.properties.*
 
 var font: BitmapFont by Delegates.notNull()
-
 var backgroundField: RoundRect? = null
 val blocks = mutableMapOf<Int, Block>()
 var fields = mutableListOf<Field>()
 var fieldSize = Size(560, 560)
 var cs = fieldSize.height / 8
+
+
 suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
@@ -38,7 +39,7 @@ suspend fun main() = Korge(
     convertToRealX(5)
     populateField(this)
 
-    val testBlock = block(BlockColors.Red, BlockType.ONEbyONE)
+    val testBlock = block(BlockColors.Red, BlockType.ONEbyONE, StartPosition.LEFT)
     testBlock.draggable {
         if (it.end) {
             println("dragging ended: snapping!")
