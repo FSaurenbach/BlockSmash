@@ -1,5 +1,6 @@
 import korlibs.image.color.*
 import korlibs.korge.view.*
+import korlibs.korge.view.align.*
 import korlibs.math.geom.*
 
 enum class BlockType{
@@ -33,7 +34,10 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         }
     }
     private fun twobytwo(container: Container){
-        container.roundRect(Size(cs,cs), RectCorners(5f), fill = color)
+        val one = container.roundRect(Size(cs,cs), RectCorners(5f), fill = color)
+        var two = container.roundRect(Size(cs,cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
+        val three = container.roundRect(Size(cs,cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
+        val four = container.roundRect(Size(cs,cs), RectCorners(5f), fill = color).alignLeftToRightOf(three).alignTopToBottomOf(one)
     }
 
 }

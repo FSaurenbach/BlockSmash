@@ -39,7 +39,7 @@ suspend fun main() = Korge(
     convertToRealX(5)
     populateField(this)
 
-    val testBlock = block(BlockColors.Red, BlockType.ONEbyONE, StartPosition.LEFT)
+    val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     testBlock.draggable {
         if (it.end) {
             println("dragging ended: snapping!")
