@@ -14,23 +14,28 @@ enum class StartPosition {
 }
 
 object BlockColors {
-    val Black get() = Colors["#141414"]
-    val Blue get() = Colors["#6f6fff"]
-    val Red get() = Colors["#911100"]
+    private val Black get() = Colors.BLACK!!
+    private val Blue get() = Colors["#0a00ff"]!!
+    val Red get() = Colors["#911100"]!!
+
+    fun getRandomColor(): RGBA {
+        val colors = listOf(Black, Blue, Red)
+        return colors.random()  // Picks a random RGBA object
+    }
 }
 
 fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition) =
     Block(color, blockType, startPosition).addTo(this)
 
 class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
-    var placed: Boolean = false
+    private var placed: Boolean = false
 
     init {
         val theWhole = this // Was originally a container() but should work like this too
         when (startPosition) {
-            StartPosition.LEFT -> this.position(0, 680)
-            StartPosition.MIDDLE -> this.position(200, 680)
-            StartPosition.RIGHT -> this.position(400, 680)
+            StartPosition.LEFT -> this.position(-40, 680)
+            StartPosition.MIDDLE -> this.position(170, 680)
+            StartPosition.RIGHT -> this.position(380, 680)
         }
         when (blockType) {
             BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
