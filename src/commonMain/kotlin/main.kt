@@ -40,7 +40,7 @@ suspend fun main() = Korge(
     populateField(this)
 
     val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
-    testBlock.draggable {
+    /*testBlock.draggable {
         if (it.end) {
             println("dragging ended: snapping!")
             println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
@@ -60,7 +60,7 @@ suspend fun main() = Korge(
 
             }
         }
-    }
+    }*/
 
 }
 

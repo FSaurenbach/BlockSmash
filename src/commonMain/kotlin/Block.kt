@@ -1,7 +1,9 @@
 import korlibs.image.color.*
+import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
+import kotlin.math.*
 
 enum class BlockType{
     ONEbyONE, TWObyTWO, BigL
@@ -21,7 +23,7 @@ fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosit
 class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
     var placed: Boolean = true
     init {
-        val theWhole = container()
+        val theWhole = this // Was originally a container() but should work like this too
         when (startPosition){
             StartPosition.LEFT -> this.position(0,680)
             StartPosition.MIDDLE -> this.position(200, 680)
@@ -31,6 +33,29 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
             BlockType.TWObyTWO -> twobytwo(theWhole)
             else -> println("ERROR")
+        }
+        this.draggable {
+            if (it.end) {
+                println("dragging ended: snapping!")
+                println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
+
+                val blockPosition1 = Point(convertToCoordX(round(it.view.globalPos.x).toInt()).toInt(), convertToCoordY(
+                    round(it.view.globalPos.y).toInt()).toInt())
+                for (field in fields) {
+                    val fieldPosition = Point(convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(
+                        round(field.globalPos.y).toInt()).toInt())
+
+                    //println("Block position converted ${blockPosition1.x}, ${blockPosition1.y}")
+                    //println("Field position converted ${fieldPosition.x}, ${fieldPosition.y}")
+
+                    if (blockPosition1 == fieldPosition){
+                        it.view.position(field.globalPos)
+                        println("Snapping block to: $fieldPosition")
+                    }
+
+
+                }
+            }
         }
     }
     private fun twobytwo(container: Container){
@@ -42,3 +67,6 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
 }
 
+/*fun checkIfCorrectlyPlaced(block: Block):Boolean{
+    for ()
+}*/
