@@ -49,8 +49,11 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                     //println("Field position converted ${fieldPosition.x}, ${fieldPosition.y}")
 
                     if (blockPosition1 == fieldPosition){
+                        checkIfCorrectlyPlaced(this)
                         it.view.position(field.globalPos)
+
                         println("Snapping block to: $fieldPosition")
+
                     }
 
 
@@ -67,6 +70,23 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
 }
 
-/*fun checkIfCorrectlyPlaced(block: Block):Boolean{
-    for ()
-}*/
+fun checkIfCorrectlyPlaced(wholeBlock: Block):Boolean{
+    for (block in wholeBlock.children){
+        val blockPosition1 = Point(convertToCoordX(round(block.globalPos.x).toInt()).toInt(), convertToCoordY(
+            round(block.globalPos.y).toInt()).toInt())
+        for (field in fields) {
+            val fieldPosition = Point(convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(
+                round(field.globalPos.y).toInt()).toInt())
+
+            if (blockPosition1 == fieldPosition){
+
+                println("ALL TESTS PASSED")
+
+            }
+
+
+        }
+
+    }
+    return true
+}

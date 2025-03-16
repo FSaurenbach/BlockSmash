@@ -40,27 +40,7 @@ suspend fun main() = Korge(
     populateField(this)
 
     val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
-    /*testBlock.draggable {
-        if (it.end) {
-            println("dragging ended: snapping!")
-            println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
 
-            val blockPosition1 = Point(convertToCoordX(round(it.view.globalPos.x).toInt()).toInt(), convertToCoordY(round(it.view.globalPos.y).toInt()).toInt())
-            for (field in fields) {
-                val fieldPosition = Point(convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(round(field.globalPos.y).toInt()).toInt())
-
-                //println("Block position converted ${blockPosition1.x}, ${blockPosition1.y}")
-                //println("Field position converted ${fieldPosition.x}, ${fieldPosition.y}")
-
-                if (blockPosition1 == fieldPosition){
-                    it.view.position(field.globalPos)
-                    println("Snapping block to: $fieldPosition")
-                }
-
-
-            }
-        }
-    }*/
 
 }
 
