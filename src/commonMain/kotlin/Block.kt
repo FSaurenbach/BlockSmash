@@ -14,9 +14,9 @@ enum class StartPosition {
 }
 
 object BlockColors {
-    private val Black get() = Colors.BLACK!!
-    private val Blue get() = Colors["#0a00ff"]!!
-    val Red get() = Colors["#911100"]!!
+    private val Black get() = Colors.BLACK
+    private val Blue get() = Colors["#0a00ff"]
+    private val Red get() = Colors["#911100"]
 
     fun getRandomColor(): RGBA {
         val colors = listOf(Black, Blue, Red)
@@ -94,6 +94,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
     val testsToPass = wholeBlock.children.count()
     println("tests to pass: $testsToPass")
     var testsPassed = 0
+    var occupiedFields = mutableListOf<Field>()
     for (block in wholeBlock.children) {
         val blockPosition1 = Point(
             convertToCoordX(round(block.globalPos.x).toInt()).toInt(), convertToCoordY(
@@ -107,11 +108,19 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
                 ).toInt()
             )
 
-            if (blockPosition1 == fieldPosition) testsPassed++
+        if (blockPosition1 == fieldPosition && !field.occupied) {
+            testsPassed++
+            occupiedFields.add(field)
+        }
 
 
         }
 
+    }
+    if (testsPassed == testsToPass){
+        for (field in occupiedFields){
+            field.occupied = true
+        }
     }
     return testsPassed == testsToPass
 }
