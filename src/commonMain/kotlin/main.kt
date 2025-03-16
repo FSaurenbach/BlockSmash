@@ -10,7 +10,6 @@ import kotlin.Number
 import kotlin.math.*
 import kotlin.properties.*
 
-var cellSize: Float = 0f
 var font: BitmapFont by Delegates.notNull()
 
 var backgroundField: RoundRect? = null
@@ -39,15 +38,15 @@ suspend fun main() = Korge(
     convertToRealX(5)
     populateField(this)
 
-    var testBlock = block(Colors["#ff0008"]).centerXOnStage()
+    val testBlock = block(BlockColors.Red, BlockType.ONEbyONE)
     testBlock.draggable {
         if (it.end) {
             println("dragging ended: snapping!")
             println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
 
-            var blockPosition1 = Point(convertToCoordX(round(it.view.globalPos.x).toInt()).toInt(), convertToCoordY(round(it.view.globalPos.y).toInt()).toInt())
+            val blockPosition1 = Point(convertToCoordX(round(it.view.globalPos.x).toInt()).toInt(), convertToCoordY(round(it.view.globalPos.y).toInt()).toInt())
             for (field in fields) {
-                var fieldPosition = Point(convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(round(field.globalPos.y).toInt()).toInt())
+                val fieldPosition = Point(convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(round(field.globalPos.y).toInt()).toInt())
 
                 //println("Block position converted ${blockPosition1.x}, ${blockPosition1.y}")
                 //println("Field position converted ${fieldPosition.x}, ${fieldPosition.y}")
