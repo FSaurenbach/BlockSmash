@@ -23,7 +23,7 @@ fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosit
     Block(color, blockType, startPosition).addTo(this)
 
 class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
-    var placed: Boolean = true
+    var placed: Boolean = false
 
     init {
         val theWhole = this // Was originally a container() but should work like this too
@@ -37,7 +37,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.TWObyTWO -> twobytwo(theWhole)
             else -> println("ERROR")
         }
-        this.draggable {
+        this.draggableCloseable {
+
             if (it.end) {
                 println("dragging ended: snapping!")
                 println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
@@ -57,12 +58,11 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                     //println("Block position converted ${blockPosition1.x}, ${blockPosition1.y}")
                     //println("Field position converted ${fieldPosition.x}, ${fieldPosition.y}")
 
-                    if (blockPosition1 == fieldPosition) {
-                        if (checkIfCorrectlyPlaced(this)){
-                            println("Placed correctly snapping:")
-                            it.view.position(field.globalPos)
-                            placed = true
-                        }
+                    if (blockPosition1 == fieldPosition && checkIfCorrectlyPlaced(this)) {
+                        println("Placed correctly snapping:")
+                        it.view.position(field.globalPos)
+                        placed = true
+
 
 
                     }
@@ -70,6 +70,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
                 }
             }
+
         }
     }
 
@@ -101,7 +102,6 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
             )
 
             if (blockPosition1 == fieldPosition) testsPassed++
-
 
 
         }
