@@ -51,11 +51,14 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.BigL -> bigL(theWhole)
             else -> println("ERROR")
         }
+        this.scale(0.5)
         var closeable:DraggableCloseable? = null
         closeable = this.draggableCloseable {
             if (it.start){
+
                 println(this.zIndex)
                 this.zIndex(99)
+                this.scale(1)
             }
             if (it.end) {
                 this.zIndex(0)
