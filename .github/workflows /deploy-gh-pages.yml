@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master  # Adjust this if your main branch has a different name
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch: # Allows manual triggerin
 
 permissions:
   contents: write
