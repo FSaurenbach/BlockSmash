@@ -11,10 +11,9 @@ import korlibs.math.geom.*
 import kotlin.Number
 import kotlin.math.*
 import kotlin.properties.*
-
+val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
 var backgroundField: RoundRect? = null
-val blocks = mutableMapOf<Int, Block>()
 var fields = mutableListOf<Field>()
 var fieldSize = Size(560, 560)
 var cs = fieldSize.height / 8
@@ -22,6 +21,7 @@ var leftOccupied = false
 var middleOccupied = false
 var rightOccupied = false
 var sContainer: Container? = null
+val occupiedFields = mutableListOf<Field>()
 suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
@@ -34,9 +34,9 @@ suspend fun main() = Korge(
     gameId = "io.github.sauronbach.blockSmash",
     forceRenderEveryFrame = false, // Optimization to reduce battery usage!
 ) {
-    var background = LinearGradientPaint(
-        0, 0, // x0, y0: Start at the top-left corner
-        0, 853, // x1, y1: End at the bottom-left corner (vertical gradient)
+    val background = LinearGradientPaint(
+        0, 0,
+        0, 853,
         cycle = CycleMethod.NO_CYCLE
     ) {
         // Subtle blue gradient, slight change from light to slightly darker blue
@@ -63,6 +63,7 @@ suspend fun main() = Korge(
 
 fun populateField(container: Container) {
     for (x in 0..7) {
+
         for (y in 0..7) {
             val f = container.field(convertToRealX(x).toInt(), convertToRealY(y).toInt(), x, y)
 
@@ -73,6 +74,22 @@ fun populateField(container: Container) {
             }
         }
     }
+
+    for (field in fields) {
+        // Ensure that the rows list has enough sublists to accommodate all Y values
+        while (rows.size <= field.fieldY) {
+            rows.add(mutableListOf())
+        }
+
+        // Ensure that each row has enough sublists to accommodate all X values
+        while (rows[field.fieldY].size <= field.fieldX) {
+            rows[field.fieldY].add(mutableListOf())
+        }
+
+        rows[field.fieldY][field.fieldX].add(field)
+    }
+    println(rows)
+
 }
 
 
@@ -115,6 +132,24 @@ fun createPieces(container: Container) {
 
     }
 }
-fun checker(){
+fun addNewPieces(){
     if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer!!)
 }
+fun checkForBlast() {
+    for (y in 0 until 8) {
+        val rowCount = occupiedFields.count { it.fieldY == y }
+        if (rowCount == 8) {
+            println("Row $y blast!!")
+            TODO("Remove occupants")
+        }
+    }
+
+    for (x in 0 until 8) {
+        val colCount = occupiedFields.count { it.fieldX == x }
+        if (colCount == 8) {
+            println("Column $x blast!!")
+        }
+    }
+}
+
+

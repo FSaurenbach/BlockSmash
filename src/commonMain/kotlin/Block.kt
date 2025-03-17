@@ -58,6 +58,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
                 println(this.zIndex)
                 this.zIndex(99)
+
                 this.scale(1)
             }
             if (it.end) {
@@ -91,7 +92,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                             StartPosition.RIGHT -> rightOccupied = false
                         }
                         println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
-                        checker()
+                        addNewPieces()
+                        checkForBlast()
 
                     }
 
@@ -134,7 +136,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
     val testsToPass = wholeBlock.children.count()
     println("tests to pass: $testsToPass")
     var testsPassed = 0
-    var occupiedFields = mutableListOf<Field>()
+
     for (block in wholeBlock.children) {
         val blockPosition1 = Point(
             convertToCoordX(round(block.globalPos.x).toInt()).toInt(), convertToCoordY(
