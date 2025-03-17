@@ -1,5 +1,7 @@
 import korlibs.image.color.*
 import korlibs.image.font.*
+import korlibs.image.paint.*
+import korlibs.image.vector.*
 import korlibs.io.file.std.*
 import korlibs.korge.*
 import korlibs.korge.input.*
@@ -24,7 +26,7 @@ suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
     title = "Block Smash",
-    bgcolor = Colors["#5a78c5"],
+    bgcolor = Colors["#4c65a4"],
     /**
     `gameId` is associated with the location of storage, which contains `history` and `best`.
     see [Views.realSettingsFolder]
@@ -32,9 +34,20 @@ suspend fun main() = Korge(
     gameId = "io.github.sauronbach.blockSmash",
     forceRenderEveryFrame = false, // Optimization to reduce battery usage!
 ) {
+    var background = LinearGradientPaint(
+        0, 0, // x0, y0: Start at the top-left corner
+        0, 853, // x1, y1: End at the bottom-left corner (vertical gradient)
+        cycle = CycleMethod.NO_CYCLE
+    ) {
+        // Subtle blue gradient, slight change from light to slightly darker blue
+        addColorStop(0.0, RGBA(95, 146, 255)) // Lighter blue at the top
+        addColorStop(1.0, RGBA(65, 102, 163)) // Slightly darker blue at the bottom
+    }
+    roundRect(Size(1920,1080), RectCorners(5f), background).centerOnStage()
     font = resourcesVfs["clear_sans.fnt"].readBitmapFont()
 
     sContainer = this
+
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
     backgroundField!!.centerOnStage()
     backgroundField!!.y -= 70
@@ -98,7 +111,7 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        container.block(color, BlockType.TWObyTWO, location!!)
+        container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
 
     }
 }

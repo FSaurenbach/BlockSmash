@@ -12,18 +12,22 @@ enum class BlockType {
 enum class StartPosition {
     LEFT, MIDDLE, RIGHT
 }
-
+object BlockTypeHelper {
+    fun getRandomBlockType(): BlockType {
+        val blockTypes = BlockType.values().toList()
+        return blockTypes.random()  // Picks a random BlockType
+    }
+}
 object BlockColors {
-    private val Black get() = Colors.BLACK
-    private val Blue get() = Colors["#0a00ff"]
-    private val Red get() = Colors["#911100"]
-    private val Green get() = Colors["#00ff00"]
+    private val Blue get() = Colors["#264597"]
+    private val Red get() = Colors["#e53935"]
+    private val Green get() = Colors["#0cdc2d"]
     private val Yellow get() = Colors["#ffff00"]
     private val Purple get() = Colors["#800080"]
     private val Orange get() = Colors["#ff6600"]
 
     fun getRandomColor(): RGBA {
-        val colors = listOf(Black, Blue, Red, Green, Yellow, Purple, Orange)
+        val colors = listOf(Blue, Red, Green, Yellow, Purple, Orange)
         return colors.random()  // Picks a random RGBA object
     }
 }
@@ -44,6 +48,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         when (blockType) {
             BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
             BlockType.TWObyTWO -> twobytwo(theWhole)
+            BlockType.BigL -> bigL(theWhole)
             else -> println("ERROR")
         }
         var closeable:DraggableCloseable? = null
@@ -109,6 +114,15 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
         val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
             .alignTopToBottomOf(one)
+    }
+    private fun bigL(container: Container) {
+        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
+        var two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
+        val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(two)
+        val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
+            .alignTopToBottomOf(two)
+        val five = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(four)
+            .alignTopToBottomOf(two)
     }
 
 }
