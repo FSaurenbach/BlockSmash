@@ -17,9 +17,13 @@ object BlockColors {
     private val Black get() = Colors.BLACK
     private val Blue get() = Colors["#0a00ff"]
     private val Red get() = Colors["#911100"]
+    private val Green get() = Colors["#00ff00"]
+    private val Yellow get() = Colors["#ffff00"]
+    private val Purple get() = Colors["#800080"]
+    private val Orange get() = Colors["#ff6600"]
 
     fun getRandomColor(): RGBA {
-        val colors = listOf(Black, Blue, Red)
+        val colors = listOf(Black, Blue, Red, Green, Yellow, Purple, Orange)
         return colors.random()  // Picks a random RGBA object
     }
 }
@@ -44,8 +48,12 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         }
         var closeable:DraggableCloseable? = null
         closeable = this.draggableCloseable {
-
+            if (it.start){
+                println(this.zIndex)
+                this.zIndex(99)
+            }
             if (it.end) {
+                this.zIndex(0)
                 println("dragging ended: snapping!")
                 println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
 
@@ -69,13 +77,28 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         it.view.position(field.globalPos)
                         placed = true
                         closeable!!.close()
-
+                        when (startPosition) {
+                            StartPosition.LEFT -> leftOccupied = false
+                            StartPosition.MIDDLE -> middleOccupied = false
+                            StartPosition.RIGHT -> rightOccupied = false
+                        }
+                        println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
+                        checker()
 
                     }
 
 
+
+                }
+                if (!placed) {
+                    when (startPosition) {
+                        StartPosition.LEFT -> this.position(-40, 680)
+                        StartPosition.MIDDLE -> this.position(170, 680)
+                        StartPosition.RIGHT -> this.position(380, 680)
+                    }
                 }
             }
+
 
         }
     }

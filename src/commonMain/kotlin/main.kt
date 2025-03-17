@@ -19,6 +19,7 @@ var cs = fieldSize.height / 8
 var leftOccupied = false
 var middleOccupied = false
 var rightOccupied = false
+var sContainer: Container? = null
 suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
@@ -33,7 +34,7 @@ suspend fun main() = Korge(
 ) {
     font = resourcesVfs["clear_sans.fnt"].readBitmapFont()
 
-
+    sContainer = this
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
     backgroundField!!.centerOnStage()
     backgroundField!!.y -= 70
@@ -42,6 +43,7 @@ suspend fun main() = Korge(
 
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
+
 
 }
 
@@ -99,4 +101,7 @@ fun createPieces(container: Container) {
         container.block(color, BlockType.TWObyTWO, location!!)
 
     }
+}
+fun checker(){
+    if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer!!)
 }
