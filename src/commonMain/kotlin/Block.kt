@@ -49,7 +49,6 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
             BlockType.TWObyTWO -> twobytwo(theWhole)
             BlockType.BigL -> bigL(theWhole)
-            else -> println("ERROR")
         }
         this.scale(0.5)
         var closeable:DraggableCloseable? = null
@@ -115,18 +114,18 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
     private fun twobytwo(container: Container) {
         val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-        var two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
+        container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
         val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
-        val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
+        container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
             .alignTopToBottomOf(one)
     }
     private fun bigL(container: Container) {
         val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-        var two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
+        val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
         val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(two)
         val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
             .alignTopToBottomOf(two)
-        val five = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(four)
+        container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(four)
             .alignTopToBottomOf(two)
     }
 

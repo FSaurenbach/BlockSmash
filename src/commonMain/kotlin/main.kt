@@ -22,6 +22,7 @@ var middleOccupied = false
 var rightOccupied = false
 var sContainer: Container? = null
 val occupiedFields = mutableListOf<Field>()
+val allblocks = mutableListOf<Block>()
 suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
@@ -128,7 +129,8 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
+        var c= container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
+        allblocks.add(c)
 
     }
 }
@@ -140,7 +142,16 @@ fun checkForBlast() {
         val rowCount = occupiedFields.count { it.fieldY == y }
         if (rowCount == 8) {
             println("Row $y blast!!")
-            TODO("Remove occupants")
+            for (block in allblocks){
+                block.forEachChild {
+                    println(it)
+                    it as RoundRect
+                    var blockY = convertToCoordY(it.globalPos.y.toInt()).toInt()
+                    println("blockY: ${it.globalPos.y} spreng dich weg: $y")
+                    if (y == blockY) it.removeFromParent()
+                }
+            }
+            //TODO("Remove occupants")
         }
     }
 
