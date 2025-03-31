@@ -87,9 +87,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         it.view.position(field.globalPos)
                         this.forEachChild {
                             sContainer!!.placedBlock(color, convertToCoordX(it.globalPos.x.toInt()), convertToCoordY(it.globalPos.y.toInt()))
-                            var oc = occupiedFields.find { it.fieldX == convertToCoordX(it.globalPos.x.toInt())&& it.fieldY == convertToCoordY(it.globalPos.y.toInt()) }
-                            occupiedFields.remove(oc)
-                            println("removing $oc")
+                            //var oc = occupiedFields.find { it.fieldX == convertToCoordX(it.globalPos.x.toInt())&& it.fieldY == convertToCoordY(it.globalPos.y.toInt()) }
+                            //occupiedFields.remove(oc)
+                            //println("removing $oc")
                         }
                         placed = true
                         closeable!!.close()
@@ -98,7 +98,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                             StartPosition.MIDDLE -> middleOccupied = false
                             StartPosition.RIGHT -> rightOccupied = false
                         }
-                        println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
+                        //println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
                         addNewPieces()
                         allblocks.remove(this)
                         println("count:"+ occupiedFields.count())
@@ -159,7 +159,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
                     round(field.globalPos.y).toInt()
                 )
             )
-            if (field.occupied) println("field: $field is occupied")
+            //if (field.occupied) println("field: $field is occupied")
 
             if (blockPosition1 == fieldPosition && !field.occupied) {
                 testsPassed++
@@ -180,6 +180,3 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
 }
 
 
-class BlockBase() {
-
-}

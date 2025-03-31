@@ -8,9 +8,9 @@ import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
-import kotlin.Number
 import kotlin.math.*
 import kotlin.properties.*
+
 val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
 var backgroundField: RoundRect? = null
@@ -37,15 +37,13 @@ suspend fun main() = Korge(
     forceRenderEveryFrame = false, // Optimization to reduce battery usage!
 ) {
     val background = LinearGradientPaint(
-        0, 0,
-        0, 853,
-        cycle = CycleMethod.NO_CYCLE
+        0, 0, 0, 853, cycle = CycleMethod.NO_CYCLE
     ) {
         // Subtle blue gradient, slight change from light to slightly darker blue
         addColorStop(0.0, RGBA(95, 146, 255)) // Lighter blue at the top
         addColorStop(1.0, RGBA(65, 102, 163)) // Slightly darker blue at the bottom
     }
-    roundRect(Size(1920,1080), RectCorners(5f), background).centerOnStage()
+    roundRect(Size(1920, 1080), RectCorners(5f), background).centerOnStage()
     font = resourcesVfs["clear_sans.fnt"].readBitmapFont()
 
     sContainer = this
@@ -120,42 +118,47 @@ fun createPieces(container: Container) {
                 location = StartPosition.LEFT
                 leftOccupied = true
             }
+
             !middleOccupied -> {
                 location = StartPosition.MIDDLE
                 middleOccupied = true
             }
+
             !rightOccupied -> {
                 location = StartPosition.RIGHT
                 rightOccupied = true
             }
         }
         val color = BlockColors.getRandomColor()
-        var c= container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
+        var c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
         allblocks.add(c)
 
     }
 }
-fun addNewPieces(){
+
+fun addNewPieces() {
     if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer!!)
 }
 
 
-fun checkForBlast(){
-    for (rowY in 0 until 8){
+fun checkForBlast() {
+    for (rowY in 0 until 8) {
         var counter = 0
         val checkedBlocks = mutableListOf<PlacedBlock>()
-        for (placedBlock in placedBlocks){
-            if (placedBlock.fieldY == rowY){
+        for (placedBlock in placedBlocks) {
+            if (placedBlock.fieldY == rowY) {
                 checkedBlocks.add(placedBlock)
                 counter++
             }
         }
-        if (counter==8) {
-            for(block in checkedBlocks) {
+        println("Row: $rowY, counter: $counter")
+        if (counter == 8) {
+            for (block in checkedBlocks) {
                 var occupiedField = fields.find { it.pos == block.pos }
-                println("Removing occupied field:$occupiedField")
+                //println("Removing occupied field:$occupiedField")
                 block.removeFromParent()
                 occupiedFields.remove(occupiedField)
+                placedBlocks.remove(block)
                 occupiedField?.occupied = false
 
             }
@@ -164,6 +167,7 @@ fun checkForBlast(){
         //println("Current row: $rowY, counter:$counter ${checkedBlocks.count()}")
         checkedBlocks.clear()
     }
+
 }
 
 
