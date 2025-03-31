@@ -12,12 +12,14 @@ enum class BlockType {
 enum class StartPosition {
     LEFT, MIDDLE, RIGHT
 }
+
 object BlockTypeHelper {
     fun getRandomBlockType(): BlockType {
         val blockTypes = BlockType.values().toList()
         return blockTypes.random()  // Picks a random BlockType
     }
 }
+
 object BlockColors {
     private val Blue get() = Colors["#264597"]
     private val Red get() = Colors["#e53935"]
@@ -51,9 +53,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.BigL -> bigL(theWhole)
         }
         this.scale(0.5)
-        var closeable:DraggableCloseable? = null
+        var closeable: DraggableCloseable? = null
         closeable = this.draggableCloseable {
-            if (it.start){
+            if (it.start) {
 
                 println(this.zIndex)
                 this.zIndex(99)
@@ -83,6 +85,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                     if (blockPosition1 == fieldPosition && checkIfCorrectlyPlaced(this)) {
                         println("Placed correctly snapping:")
                         it.view.position(field.globalPos)
+                        this.forEachChild {
+                            sContainer!!.placedBlock(color, convertToCoordX(it.globalPos.x.toInt()), convertToCoordY(it.globalPos.y.toInt()))
+                        }
                         placed = true
                         closeable!!.close()
                         when (startPosition) {
@@ -92,10 +97,10 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         }
                         println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
                         addNewPieces()
+                        this.removeFromParent()
                         checkForBlast()
 
                     }
-
 
 
                 }
@@ -119,6 +124,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
             .alignTopToBottomOf(one)
     }
+
     private fun bigL(container: Container) {
         val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
         val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
@@ -149,19 +155,24 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
                 ).toInt()
             )
 
-        if (blockPosition1 == fieldPosition && !field.occupied) {
-            testsPassed++
-            occupiedFields.add(field)
-        }
+            if (blockPosition1 == fieldPosition && !field.occupied) {
+                testsPassed++
+                occupiedFields.add(field)
+            }
 
 
         }
 
     }
-    if (testsPassed == testsToPass){
-        for (field in occupiedFields){
+    if (testsPassed == testsToPass) {
+        for (field in occupiedFields) {
             field.occupied = true
         }
     }
     return testsPassed == testsToPass
+}
+
+
+class BlockBase() {
+
 }

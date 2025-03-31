@@ -23,6 +23,7 @@ var rightOccupied = false
 var sContainer: Container? = null
 val occupiedFields = mutableListOf<Field>()
 val allblocks = mutableListOf<Block>()
+var placedBlocks = mutableListOf<PlacedBlock>()
 suspend fun main() = Korge(
     virtualSize = Size(480, 853),
 
@@ -102,12 +103,12 @@ fun convertToRealY(fieldCoordinate: Int): Number {
     return backgroundField!!.y + cs * fieldCoordinate
 }
 
-fun convertToCoordX(realX: Int): Number {
-    return round((realX - backgroundField!!.x) / cs)
+fun convertToCoordX(realX: Int): Int {
+    return round((realX - backgroundField!!.x) / cs).toInt()
 }
 
-fun convertToCoordY(realY: Int): Number {
-    return round((realY - backgroundField!!.y) / cs)
+fun convertToCoordY(realY: Int): Int {
+    return round((realY - backgroundField!!.y) / cs).toInt()
 }
 
 fun createPieces(container: Container) {
@@ -137,30 +138,20 @@ fun createPieces(container: Container) {
 fun addNewPieces(){
     if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer!!)
 }
-fun checkForBlast() {
-    for (y in 0 until 8) {
-        val rowCount = occupiedFields.count { it.fieldY == y }
-        if (rowCount == 8) {
-            println("Row $y blast!!")
-            for (block in allblocks){
-                block.forEachChild {
-                    println(it)
-                    it as RoundRect
-                    var blockY = convertToCoordY(it.globalPos.y.toInt()).toInt()
-                    println("blockY: ${it.globalPos.y} spreng dich weg: $y")
-                    if (y == blockY) it.removeFromParent()
-                }
-            }
-            //TODO("Remove occupants")
-        }
-    }
 
-    for (x in 0 until 8) {
-        val colCount = occupiedFields.count { it.fieldX == x }
-        if (colCount == 8) {
-            println("Column $x blast!!")
+
+fun checkForBlast(){
+    for (rowY in 0 until 8){
+        var counter = 0
+        for (placedBlock in placedBlocks){
+            if (placedBlock.fieldY == rowY) counter++
         }
+        println("Current row: $rowY, counter:$counter")
     }
 }
+
+
+
+
 
 
