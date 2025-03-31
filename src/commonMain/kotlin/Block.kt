@@ -6,7 +6,19 @@ import korlibs.math.geom.*
 import kotlin.math.*
 
 enum class BlockType {
-    ONEbyONE, TWObyTWO, BigL
+    ONEbyONE, TWObyTWO, BigL,
+  //  OnebyThree, TWObyTHREE, THREEbyTHREE,
+
+
+}
+enum class BlockRotation {
+    zero, quarter, half, threequarters
+}
+object BlockRotationHelper {
+    fun getRandomRotation(): BlockRotation {
+        val blockRotations = BlockRotation.values().toList()
+        return blockRotations.random()  // Picks a random BlockType
+    }
 }
 
 enum class StartPosition {
@@ -34,10 +46,10 @@ object BlockColors {
     }
 }
 
-fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition) =
-    Block(color, blockType, startPosition).addTo(this)
+fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition, rotation: BlockRotation) =
+    Block(color, blockType, startPosition, rotation).addTo(this)
 
-class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
+class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition, rotation: BlockRotation) : Container() {
     private var placed: Boolean = false
 
     init {
@@ -51,6 +63,13 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
             BlockType.TWObyTWO -> twobytwo(theWhole)
             BlockType.BigL -> bigL(theWhole)
+            else -> throw error("Block has to be defined")
+        }
+        when (rotation){
+            BlockRotation.zero -> this.rotation = Angle.ZERO
+            BlockRotation.quarter -> this.rotation = Angle.QUARTER
+            BlockRotation.half -> this.rotation = Angle.HALF
+            BlockRotation.threequarters -> this.rotation = 270.degrees
         }
         this.scale(0.5)
         var closeable: DraggableCloseable? = null
