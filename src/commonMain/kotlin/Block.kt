@@ -87,6 +87,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         it.view.position(field.globalPos)
                         this.forEachChild {
                             sContainer!!.placedBlock(color, convertToCoordX(it.globalPos.x.toInt()), convertToCoordY(it.globalPos.y.toInt()))
+                            var oc = occupiedFields.find { it.fieldX == convertToCoordX(it.globalPos.x.toInt())&& it.fieldY == convertToCoordY(it.globalPos.y.toInt()) }
+                            occupiedFields.remove(oc)
+                            println("removing $oc")
                         }
                         placed = true
                         closeable!!.close()
@@ -97,6 +100,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         }
                         println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
                         addNewPieces()
+                        allblocks.remove(this)
+                        println("count:"+ occupiedFields.count())
                         this.removeFromParent()
                         checkForBlast()
 
@@ -144,16 +149,17 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
 
     for (block in wholeBlock.children) {
         val blockPosition1 = Point(
-            convertToCoordX(round(block.globalPos.x).toInt()).toInt(), convertToCoordY(
+            convertToCoordX(round(block.globalPos.x).toInt()), convertToCoordY(
                 round(block.globalPos.y).toInt()
-            ).toInt()
+            )
         )
         for (field in fields) {
             val fieldPosition = Point(
-                convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(
+                convertToCoordX(round(field.globalPos.x).toInt()), convertToCoordY(
                     round(field.globalPos.y).toInt()
-                ).toInt()
+                )
             )
+            if (field.occupied) println("field: $field is occupied")
 
             if (blockPosition1 == fieldPosition && !field.occupied) {
                 testsPassed++
@@ -169,6 +175,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
             field.occupied = true
         }
     }
+    println("test passed: ${testsPassed==testsToPass}")
     return testsPassed == testsToPass
 }
 

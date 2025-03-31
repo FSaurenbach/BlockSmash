@@ -143,10 +143,26 @@ fun addNewPieces(){
 fun checkForBlast(){
     for (rowY in 0 until 8){
         var counter = 0
+        val checkedBlocks = mutableListOf<PlacedBlock>()
         for (placedBlock in placedBlocks){
-            if (placedBlock.fieldY == rowY) counter++
+            if (placedBlock.fieldY == rowY){
+                checkedBlocks.add(placedBlock)
+                counter++
+            }
         }
-        println("Current row: $rowY, counter:$counter")
+        if (counter==8) {
+            for(block in checkedBlocks) {
+                var occupiedField = fields.find { it.pos == block.pos }
+                println("Removing occupied field:$occupiedField")
+                block.removeFromParent()
+                occupiedFields.remove(occupiedField)
+                occupiedField?.occupied = false
+
+            }
+
+        }
+        //println("Current row: $rowY, counter:$counter ${checkedBlocks.count()}")
+        checkedBlocks.clear()
     }
 }
 
