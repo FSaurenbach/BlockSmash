@@ -6,20 +6,58 @@ import korlibs.math.geom.*
 import kotlin.math.*
 
 enum class BlockType {
-    ONEbyONE, TWObyTWO, BigL,
-  //  OnebyThree, TWObyTHREE, THREEbyTHREE,
+    // Single block
+    ONE_BY_ONE,
 
+    // Straight blocks (all rotations are the same)
+    ONE_BY_TWO,
+    TWO_BY_ONE,
+    ONE_BY_THREE,
+    THREE_BY_ONE,
+    ONE_BY_FOUR,
+    FOUR_BY_ONE,
+    ONE_BY_FIVE,
+    FIVE_BY_ONE,
 
+    // Square blocks (all rotations are the same)
+    TWO_BY_TWO,
+    THREE_BY_THREE,
+
+    // L-Shaped blocks (all rotations)
+    L_2X2_0,
+    L_2X2_90,
+    L_2X2_180,
+    L_2X2_270,
+
+    L_2X3_0,
+    L_2X3_90,
+    L_2X3_180,
+    L_2X3_270,
+
+    L_3X3_0,
+    L_3X3_90,
+    L_3X3_180,
+    L_3X3_270,
+
+    // T-Shaped blocks (all rotations)
+    T_2X3_0,
+    T_2X3_90,
+    T_2X3_180,
+    T_2X3_270,
+
+    // Rectangle blocks (all rotations)
+    TWO_BY_THREE_0,
+    TWO_BY_THREE_90,
+    THREE_BY_TWO_0,
+    THREE_BY_TWO_90,
+
+    // S-Shaped blocks (all rotations)
+    S_2X3_0,
+    S_2X3_90,
+    S_2X3_180,
+    S_2X3_270
 }
-enum class BlockRotation {
-    zero, quarter, half, threequarters
-}
-object BlockRotationHelper {
-    fun getRandomRotation(): BlockRotation {
-        val blockRotations = BlockRotation.values().toList()
-        return blockRotations.random()  // Picks a random BlockType
-    }
-}
+
 
 enum class StartPosition {
     LEFT, MIDDLE, RIGHT
@@ -46,10 +84,10 @@ object BlockColors {
     }
 }
 
-fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition, rotation: BlockRotation) =
-    Block(color, blockType, startPosition, rotation).addTo(this)
+fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition) =
+    Block(color, blockType, startPosition).addTo(this)
 
-class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition, rotation: BlockRotation) : Container() {
+class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
     private var placed: Boolean = false
 
     init {
@@ -60,18 +98,13 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             StartPosition.RIGHT -> this.position(380, 680)
         }
         when (blockType) {
-            BlockType.ONEbyONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-            BlockType.TWObyTWO -> twobytwo(theWhole)
-            BlockType.BigL -> bigL(theWhole)
-            else -> throw error("Block has to be defined")
-        }
-        when (rotation){
-            BlockRotation.zero -> this.rotation = Angle.ZERO
-            BlockRotation.quarter -> this.rotation = Angle.QUARTER
-            BlockRotation.half -> this.rotation = Angle.HALF
-            BlockRotation.threequarters -> this.rotation = 270.degrees
+            BlockType.ONE_BY_ONE -> theWhole.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
+            BlockType.TWO_BY_TWO -> twobytwo(theWhole)
+            BlockType.L_3X3_0 -> bigL(theWhole)
+            else -> bigL(theWhole)
         }
         this.scale(0.5)
+
         var closeable: DraggableCloseable? = null
         closeable = this.draggableCloseable {
             if (it.start) {
@@ -87,13 +120,13 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                 println("viewNextX: ${round(it.viewNextX).toInt()}, viewNextY: ${round(it.viewNextY).toInt()}")
 
                 val blockPosition1 = Point(
-                    convertToCoordX(round(it.view.globalPos.x).toInt()).toInt(), convertToCoordY(
+                    convertToCoordX(round(it.view.globalPos.x).toInt()), convertToCoordY(
                         round(it.view.globalPos.y).toInt()
                     ).toInt()
                 )
                 for (field in fields) {
                     val fieldPosition = Point(
-                        convertToCoordX(round(field.globalPos.x).toInt()).toInt(), convertToCoordY(
+                        convertToCoordX(round(field.globalPos.x).toInt()), convertToCoordY(
                             round(field.globalPos.y).toInt()
                         ).toInt()
                     )
@@ -143,6 +176,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
     private fun twobytwo(container: Container) {
         val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
+
         container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
         val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
         container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
@@ -150,13 +184,17 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
     }
 
     private fun bigL(container: Container) {
-        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
+        //container.rotation = 90.degrees
+        container.size = Size(cs*3,cs*3)
+        container.rotation(90.degrees)
+        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).anchor(Anchor.TOP_LEFT)
         val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
         val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(two)
         val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
             .alignTopToBottomOf(two)
         container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(four)
             .alignTopToBottomOf(two)
+
     }
 
 }

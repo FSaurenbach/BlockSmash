@@ -130,7 +130,7 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        var c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!, BlockRotationHelper.getRandomRotation())
+        var c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
         allblocks.add(c)
 
     }
