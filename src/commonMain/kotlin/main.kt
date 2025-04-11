@@ -1,3 +1,4 @@
+import korlibs.crypto.*
 import korlibs.image.color.*
 import korlibs.image.font.*
 import korlibs.image.paint.*
@@ -8,14 +9,18 @@ import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
+import korlibs.render.*
 import kotlin.math.*
 import kotlin.properties.*
+import kotlin.random.*
 
 val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
 var backgroundField: RoundRect? = null
 var fields = mutableListOf<Field>()
-var fieldSize = Size(560, 560)
+var windowWidth = 580*1.9.toInt()
+var windowHeight = 740*1.9.toInt()
+var fieldSize = Size(windowWidth/1.4, windowWidth/1.4)
 var cs = fieldSize.height / 8
 var leftOccupied = false
 var middleOccupied = false
@@ -24,9 +29,12 @@ var sContainer: Container? = null
 val occupiedFields = mutableListOf<Field>()
 val allblocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
+val random: Random = SecureRandom
+var first: Field? = null
 suspend fun main() = Korge(
-    virtualSize = Size(480, 853),
-
+    //windowHeight = windowHeight,
+    windowSize = Size(windowWidth,windowHeight),
+    //windowWidth = windowWidth,
     title = "Block Smash",
     bgcolor = Colors["#4c65a4"],
     /**
@@ -50,9 +58,9 @@ suspend fun main() = Korge(
 
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
     backgroundField!!.centerOnStage()
-    backgroundField!!.y -= 70
-    convertToRealX(5)
+    //backgroundField!!.y -= 70
     populateField(this)
+
 
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
@@ -88,6 +96,7 @@ fun populateField(container: Container) {
 
         rows[field.fieldY][field.fieldX].add(field)
     }
+    first = fields[0]
     println(rows)
 
 }
