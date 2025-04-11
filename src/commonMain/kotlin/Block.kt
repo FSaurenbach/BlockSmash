@@ -142,6 +142,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         master!!.position(field.globalPos)
                         println("this global: ${this.globalPos}")
                         this.forEachChild {
+                            if (it == master) return@forEachChild
+                            println("one child")
+
                             sContainer!!.placedBlock(color, convertToCoordX(it.globalPos.x.toInt()), convertToCoordY(it.globalPos.y.toInt()))
                             //var oc = occupiedFields.find { it.fieldX == convertToCoordX(it.globalPos.x.toInt())&& it.fieldY == convertToCoordY(it.globalPos.y.toInt()) }
                             //occupiedFields.remove(oc)
