@@ -9,7 +9,6 @@ import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
-import korlibs.render.*
 import kotlin.math.*
 import kotlin.properties.*
 import kotlin.random.*
@@ -18,22 +17,22 @@ val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
 var backgroundField: RoundRect? = null
 var fields = mutableListOf<Field>()
-var windowWidth = 580*1.9.toInt()
-var windowHeight = 740*1.9.toInt()
-var fieldSize = Size(windowWidth/1.4, windowWidth/1.4)
+var windowWidth = 580 * 1.9.toInt()
+var windowHeight = 740 * 1.9.toInt()
+var fieldSize = Size(windowWidth / 1.4, windowWidth / 1.4)
 var cs = fieldSize.height / 8
 var leftOccupied = false
 var middleOccupied = false
 var rightOccupied = false
 var sContainer: Container? = null
 val occupiedFields = mutableListOf<Field>()
-val allblocks = mutableListOf<Block>()
+val allBlocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
 val random: Random = SecureRandom
 var first: Field? = null
 suspend fun main() = Korge(
     //windowHeight = windowHeight,
-    windowSize = Size(windowWidth,windowHeight),
+    windowSize = Size(windowWidth, windowHeight),
     //windowWidth = windowWidth,
     title = "Block Smash",
     bgcolor = Colors["#4c65a4"],
@@ -41,7 +40,7 @@ suspend fun main() = Korge(
     `gameId` is associated with the location of storage, which contains `history` and `best`.
     see [Views.realSettingsFolder]
      */
-    gameId = "io.github.sauronbach.blockSmash",
+    gameId = "de.sauronbach.blockSmash",
     forceRenderEveryFrame = false, // Optimization to reduce battery usage!
 ) {
     val background = LinearGradientPaint(
@@ -77,19 +76,17 @@ fun populateField(container: Container) {
 
             fields.add(f)
             f.onClick {
-                println("YOU CLICKED ON ${f.fieldX} ${f.fieldY}, with the real coords: ${f.realX} ${f.realY}")
-                println("Converted to realX: ${convertToCoordX(f.fieldX)}, realY: ${convertToCoordY(f.fieldY)}")
+                println("YOU CLICKED ON ${f.fieldX} ${f.fieldY}, with the real Coordinates: ${f.realX} ${f.realY}")
+                println("Converted to realX: ${convertToCoordinateX(f.fieldX)}, realY: ${convertToCoordinateY(f.fieldY)}")
             }
         }
     }
 
     for (field in fields) {
-        // Ensure that the rows list has enough sublists to accommodate all Y values
         while (rows.size <= field.fieldY) {
             rows.add(mutableListOf())
         }
 
-        // Ensure that each row has enough sublists to accommodate all X values
         while (rows[field.fieldY].size <= field.fieldX) {
             rows[field.fieldY].add(mutableListOf())
         }
@@ -110,11 +107,11 @@ fun convertToRealY(fieldCoordinate: Int): Number {
     return backgroundField!!.y + cs * fieldCoordinate
 }
 
-fun convertToCoordX(realX: Int): Int {
+fun convertToCoordinateX(realX: Int): Int {
     return round((realX - backgroundField!!.x) / cs).toInt()
 }
 
-fun convertToCoordY(realY: Int): Int {
+fun convertToCoordinateY(realY: Int): Int {
     return round((realY - backgroundField!!.y) / cs).toInt()
 }
 
@@ -139,8 +136,8 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        var c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
-        allblocks.add(c)
+        val c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
+        allBlocks.add(c)
 
     }
 }
@@ -163,7 +160,7 @@ fun checkForBlast() {
         println("Row: $rowY, counter: $counter")
         if (counter == 8) {
             for (block in checkedBlocks) {
-                var occupiedField = fields.find { it.pos == block.pos }
+                val occupiedField = fields.find { it.pos == block.pos }
                 //println("Removing occupied field:$occupiedField")
                 block.removeFromParent()
                 occupiedFields.remove(occupiedField)
@@ -173,7 +170,30 @@ fun checkForBlast() {
             }
 
         }
-        //println("Current row: $rowY, counter:$counter ${checkedBlocks.count()}")
+        checkedBlocks.clear()
+    }
+    for (columnX in 0 until 8) {
+        var counter = 0
+        val checkedBlocks = mutableListOf<PlacedBlock>()
+        for (placedBlock in placedBlocks) {
+            if (placedBlock.fieldX == columnX) {
+                checkedBlocks.add(placedBlock)
+                counter++
+            }
+        }
+        println("Row: $columnX, counter: $counter")
+        if (counter == 8) {
+            for (block in checkedBlocks) {
+                val occupiedField = fields.find { it.pos == block.pos }
+                //println("Removing occupied field:$occupiedField")
+                block.removeFromParent()
+                occupiedFields.remove(occupiedField)
+                placedBlocks.remove(block)
+                occupiedField?.occupied = false
+
+            }
+
+        }
         checkedBlocks.clear()
     }
 

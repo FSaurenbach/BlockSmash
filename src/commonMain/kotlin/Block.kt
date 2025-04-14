@@ -91,20 +91,21 @@ fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosit
 
 class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
     private var placed: Boolean = false
-    private var master:RoundRect? = null
+    private var master: RoundRect? = null
+
     init {
 
         val theWhole = this // Was originally a container() but should work like this too
         when (startPosition) {
-            StartPosition.LEFT -> this.position(windowWidth*0.2, windowHeight*0.8)
-            StartPosition.MIDDLE -> this.position(windowWidth*0.4, windowHeight*0.8)
-            StartPosition.RIGHT -> this.position(windowWidth*0.6, windowHeight*0.8)
+            StartPosition.LEFT -> this.position(windowWidth * 0.2, windowHeight * 0.8)
+            StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
+            StartPosition.RIGHT -> this.position(windowWidth * 0.6, windowHeight * 0.8)
         }
         when (blockType) {
-            BlockType.ONE_BY_ONE -> onebyone(theWhole)
-            BlockType.TWO_BY_TWO -> twobytwo(theWhole)
+            BlockType.ONE_BY_ONE -> oneByOne(theWhole)
+            BlockType.TWO_BY_TWO -> twoByTwo(theWhole)
             BlockType.L_3X3_0 -> bigL(theWhole)
-            else -> onebyone(theWhole)
+            else -> bigL(theWhole)
             //else -> bigL(theWhole)
         }
         this.scale(0.5)
@@ -125,13 +126,13 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                 println("dragging ended: snapping!")
                 println("viewNextX: ${master!!.globalPos.x}, viewNextY: ${master!!.globalPos.y}")
                 val blockPosition1 = Point(
-                    convertToCoordX(round(master!!.globalPos.x).toInt()), convertToCoordY(
+                    convertToCoordinateX(round(master!!.globalPos.x).toInt()), convertToCoordinateY(
                         round(master!!.globalPos.y).toInt()
                     )
                 )
                 for (field in fields) {
                     val fieldPosition = Point(
-                        convertToCoordX(round(field.globalPos.x).toInt()), convertToCoordY(
+                        convertToCoordinateX(round(field.globalPos.x).toInt()), convertToCoordinateY(
                             round(field.globalPos.y).toInt()
                         )
                     )
@@ -149,7 +150,11 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                             //if (it == master) return@forEachChild
                             println("one child")
 
-                            sContainer!!.placedBlock(color, convertToCoordX(it.globalPos.x.toInt()), convertToCoordY(it.globalPos.y.toInt()))
+                            sContainer!!.placedBlock(
+                                color,
+                                convertToCoordinateX(it.globalPos.x.toInt()),
+                                convertToCoordinateY(it.globalPos.y.toInt())
+                            )
                             //var oc = occupiedFields.find { it.fieldX == convertToCoordX(it.globalPos.x.toInt())&& it.fieldY == convertToCoordY(it.globalPos.y.toInt()) }
                             //occupiedFields.remove(oc)
                             //println("removing $oc")
@@ -163,8 +168,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                         }
                         //println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
                         addNewPieces()
-                        allblocks.remove(this)
-                        println("count:"+ occupiedFields.count())
+                        allBlocks.remove(this)
+                        println("count:" + occupiedFields.count())
                         master?.removeFromParent()
                         this.removeFromParent()
                         checkForBlast()
@@ -175,9 +180,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                 }
                 if (!placed) {
                     when (startPosition) {
-                        StartPosition.LEFT -> this.position(windowWidth*0.3, windowHeight*0.7)
-                        StartPosition.MIDDLE -> this.position(windowWidth*0.6, windowHeight*0.7)
-                        StartPosition.RIGHT -> this.position(windowWidth*0.9, windowHeight*0.7)
+                        StartPosition.LEFT -> this.position(windowWidth * 0.3, windowHeight * 0.7)
+                        StartPosition.MIDDLE -> this.position(windowWidth * 0.6, windowHeight * 0.7)
+                        StartPosition.RIGHT -> this.position(windowWidth * 0.9, windowHeight * 0.7)
                     }
                 }
             }
@@ -185,13 +190,13 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
         }
     }
-    private fun onebyone(container: Container){
+
+    private fun oneByOne(container: Container) {
         val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
         master = one
-        println("dysfaffdsaf")
-        println("mastertest: $master")
     }
-    private fun twobytwo(container: Container) {
+
+    private fun twoByTwo(container: Container) {
         val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = Colors.RED)
         master = one
         container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
@@ -260,13 +265,13 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
 
     for (block in wholeBlock.children) {
         val blockPosition1 = Point(
-            convertToCoordX(round(block.globalPos.x).toInt()), convertToCoordY(
+            convertToCoordinateX(round(block.globalPos.x).toInt()), convertToCoordinateY(
                 round(block.globalPos.y).toInt()
             )
         )
         for (field in fields) {
             val fieldPosition = Point(
-                convertToCoordX(round(field.globalPos.x).toInt()), convertToCoordY(
+                convertToCoordinateX(round(field.globalPos.x).toInt()), convertToCoordinateY(
                     round(field.globalPos.y).toInt()
                 )
             )
@@ -286,7 +291,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
             field.occupied = true
         }
     }
-    println("test passed: ${testsPassed==testsToPass}")
+    println("test passed: ${testsPassed == testsToPass}")
     return testsPassed == testsToPass
 }
 
