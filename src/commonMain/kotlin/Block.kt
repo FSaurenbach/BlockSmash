@@ -265,28 +265,33 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         if (array[0][0] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell11)
         }
-        if (L_3X3_0[0][1] == 1){
+        if (array[0][1] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell12)
         }
-        if (L_3X3_0[0][2] == 1){
+        if (array[0][2] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell13)
         }
-        if (L_3X3_0[1][0] == 1){
+        if (array[1][0] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell21)
         }
-        if (L_3X3_0[1][1] == 1){
+        if (array[1][1] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell22)
         }
-        if (L_3X3_0[1][2] == 1){
+        if (array[1][2] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell23)
         }
+        if (array[2][0] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell31)
+        }
+        if (array[2][1] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell32)
+        }
+        if (array[2][2] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell33)
+        }
+
 
         //template().removeFromParent()
-        println("Array test")
-
-        println(L_3X3_0[0][0])
-        println(L_3X3_0[0][1])
-        println(L_3X3_0[1][0])
     }
 }
 
