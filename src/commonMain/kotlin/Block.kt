@@ -3,63 +3,58 @@ import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
-import korlibs.math.random.*
+import korlibs.math.random.get
+import kotlin.collections.count
+import kotlin.collections.listOf
 import kotlin.collections.random
+import kotlin.collections.toList
 import kotlin.math.*
 import kotlin.properties.*
-
+var cell11:RoundRect by Delegates.notNull()
+var cell12 :RoundRect by Delegates.notNull()
+var cell13 :RoundRect by Delegates.notNull()
+var cell21 :RoundRect by Delegates.notNull()
+var cell22 :RoundRect by Delegates.notNull()
+var cell23:RoundRect by Delegates.notNull()
+var cell31:RoundRect by Delegates.notNull()
+var cell32:RoundRect by Delegates.notNull()
+var cell33:RoundRect by Delegates.notNull()
+//var template: Container by Delegates.notNull()
+//var template:MutableList<RoundRect> by Delegates.notNull()
 enum class BlockType {
     // Single block
     ONE_BY_ONE,
 
     // Straight blocks (all rotations are the same)
-    ONE_BY_TWO,
-    TWO_BY_ONE,
-    ONE_BY_THREE,
-    THREE_BY_ONE,
-    ONE_BY_FOUR,
-    FOUR_BY_ONE,
-    ONE_BY_FIVE,
-    FIVE_BY_ONE,
+    ONE_BY_TWO, TWO_BY_ONE, ONE_BY_THREE, THREE_BY_ONE, ONE_BY_FOUR, FOUR_BY_ONE, ONE_BY_FIVE, FIVE_BY_ONE,
 
     // Square blocks (all rotations are the same)
-    TWO_BY_TWO,
-    THREE_BY_THREE,
+    TWO_BY_TWO, THREE_BY_THREE,
 
     // L-Shaped blocks (all rotations)
-    L_2X2_0,
-    L_2X2_90,
-    L_2X2_180,
-    L_2X2_270,
+    L_2X2_0, L_2X2_90, L_2X2_180, L_2X2_270,
 
-    L_2X3_0,
-    L_2X3_90,
-    L_2X3_180,
-    L_2X3_270,
+    L_2X3_0, L_2X3_90, L_2X3_180, L_2X3_270,
 
-    L_3X3_0,
-    L_3X3_90,
-    L_3X3_180,
-    L_3X3_270,
+    L_3X3_0, L_3X3_90, L_3X3_180, L_3X3_270,
 
     // T-Shaped blocks (all rotations)
-    T_2X3_0,
-    T_2X3_90,
-    T_2X3_180,
-    T_2X3_270,
+    T_2X3_0, T_2X3_90, T_2X3_180, T_2X3_270,
 
     // Rectangle blocks (all rotations)
-    TWO_BY_THREE_0,
-    TWO_BY_THREE_90,
-    THREE_BY_TWO_0,
-    THREE_BY_TWO_90,
+    TWO_BY_THREE_0, TWO_BY_THREE_90, THREE_BY_TWO_0, THREE_BY_TWO_90,
 
     // S-Shaped blocks (all rotations)
-    S_2X3_0,
-    S_2X3_90,
-    S_2X3_180,
-    S_2X3_270
+    S_2X3_0, S_2X3_90, S_2X3_180, S_2X3_270
 }
+
+val L_3X3_0 = arrayOf(
+    arrayOf(1, 0, 0), arrayOf(1, 0, 0), arrayOf(1, 1, 1)
+)
+
+val L_3X3_90 = arrayOf(
+    arrayOf(1, 1, 1), arrayOf(0, 0, 1), arrayOf(0, 0, 1)
+)
 
 
 enum class StartPosition {
@@ -96,6 +91,22 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
 
     init {
+        val templateColor = Colors.PURPLE
+        cell11 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor)
+
+        cell12 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell11)
+        cell13 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell12)
+        cell21 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignTopToBottomOf(cell11)
+        cell22 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell21)
+            .alignTopToBottomOf(cell12)
+        cell23 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell22)
+            .alignTopToBottomOf(cell13)
+        cell31 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignTopToBottomOf(cell21)
+        cell32 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell31)
+            .alignTopToBottomOf(cell22)
+        cell33 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell32)
+            .alignTopToBottomOf(cell23)
+
         when (startPosition) {
             StartPosition.LEFT -> this.position(windowWidth * 0.2, windowHeight * 0.8)
             StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
@@ -105,13 +116,12 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             BlockType.ONE_BY_ONE -> oneByOne(this)
             BlockType.TWO_BY_TWO -> twoByTwo(this)
             BlockType.L_3X3_0 -> bigL(this)
-            else -> bigL(this)
+            else -> arrayTest(this, L_3X3_0)
         }
         this.scale(0.5)
 
         var closeable: DraggableCloseable? = null
         closeable = this.draggableCloseable { it ->
-            //println("viewNextX: ${round(master!!.getPositionRelativeTo(first!!).x).toInt()}, viewNextY: ${round(master!!.getPositionRelativeTo(first!!).y).toInt()}")
 
             if (it.start) {
                 println("master: $master")
@@ -197,7 +207,6 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             .alignTopToBottomOf(one)
     }
 
-
     private fun bigL(container: Container) {
         val rotation = random.get(range = 0..3)
         println("Rotation: $rotation")
@@ -251,7 +260,34 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         }
     }
 
+    private fun arrayTest(container: Container, array: Array<Array<Int>>) {
 
+        if (array[0][0] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell11)
+        }
+        if (L_3X3_0[0][1] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell12)
+        }
+        if (L_3X3_0[0][2] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell13)
+        }
+        if (L_3X3_0[1][0] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell21)
+        }
+        if (L_3X3_0[1][1] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell22)
+        }
+        if (L_3X3_0[1][2] == 1){
+            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell23)
+        }
+
+        //template().removeFromParent()
+        println("Array test")
+
+        println(L_3X3_0[0][0])
+        println(L_3X3_0[0][1])
+        println(L_3X3_0[1][0])
+    }
 }
 
 fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
