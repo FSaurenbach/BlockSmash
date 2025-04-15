@@ -64,7 +64,8 @@ suspend fun main() = Korge(
 
     //backgroundField!!.y -= 70
     populateField(this)
-
+    leftStart = roundRect(Size(cs*1.5, cs*1.5), RectCorners(5f), Colors.PURPLE)
+        .position(windowWidth*0.2, windowHeight*0.8)
 
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
