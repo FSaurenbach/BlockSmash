@@ -17,8 +17,8 @@ val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
 var backgroundField: RoundRect by Delegates.notNull()
 var fields = mutableListOf<Field>()
-var windowWidth = 580 * 1.9.toInt()
-var windowHeight = 740 * 1.9.toInt()
+var windowWidth = (1080/4 * 1.9).toInt()
+var windowHeight = (1920/4 * 1.9).toInt()
 var fieldSize = Size(windowWidth / 1.4, windowWidth / 1.4)
 var cs = fieldSize.height / 8
 var leftOccupied = false
