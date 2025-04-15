@@ -5,9 +5,9 @@ plugins {
 }
 
 korge {
-    id = "io.github.rezmike.game2048"
+    id = "de.sauronbach.blockSmash"
 
-    name = "2048"
+    name = "Block Smash"
 
     icon = file("src/commonMain/resources/korge.png")
 

@@ -15,7 +15,7 @@ import kotlin.random.*
 
 val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
-var backgroundField: RoundRect? = null
+var backgroundField: RoundRect by Delegates.notNull()
 var fields = mutableListOf<Field>()
 var windowWidth = 580 * 1.9.toInt()
 var windowHeight = 740 * 1.9.toInt()
@@ -24,12 +24,15 @@ var cs = fieldSize.height / 8
 var leftOccupied = false
 var middleOccupied = false
 var rightOccupied = false
-var sContainer: Container? = null
+var sContainer: Container by Delegates.notNull()
 val occupiedFields = mutableListOf<Field>()
 val allBlocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
 val random: Random = SecureRandom
 var first: Field? = null
+var leftStart:RoundRect by Delegates.notNull()
+val middleStart:RoundRect by Delegates.notNull()
+val rightStart: RoundRect by Delegates.notNull()
 suspend fun main() = Korge(
     //windowHeight = windowHeight,
     windowSize = Size(windowWidth, windowHeight),
@@ -56,13 +59,16 @@ suspend fun main() = Korge(
     sContainer = this
 
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
-    backgroundField!!.centerOnStage()
+    backgroundField.centerOnStage()
+
+
     //backgroundField!!.y -= 70
     populateField(this)
 
 
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
+    
 
 
 }
@@ -100,19 +106,19 @@ fun populateField(container: Container) {
 
 
 fun convertToRealX(fieldCoordinate: Int): Number {
-    return backgroundField!!.x + cs * fieldCoordinate
+    return backgroundField.x + cs * fieldCoordinate
 }
 
 fun convertToRealY(fieldCoordinate: Int): Number {
-    return backgroundField!!.y + cs * fieldCoordinate
+    return backgroundField.y + cs * fieldCoordinate
 }
 
 fun convertToCoordinateX(realX: Int): Int {
-    return round((realX - backgroundField!!.x) / cs).toInt()
+    return round((realX - backgroundField.x) / cs).toInt()
 }
 
 fun convertToCoordinateY(realY: Int): Int {
-    return round((realY - backgroundField!!.y) / cs).toInt()
+    return round((realY - backgroundField.y) / cs).toInt()
 }
 
 fun createPieces(container: Container) {
@@ -143,7 +149,7 @@ fun createPieces(container: Container) {
 }
 
 fun addNewPieces() {
-    if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer!!)
+    if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer)
 }
 
 
