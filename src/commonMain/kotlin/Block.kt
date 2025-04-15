@@ -92,6 +92,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
     init {
         val templateColor = Colors.PURPLE
+
         cell11 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor)
 
         cell12 = roundRect(Size(cs, cs), RectCorners(5f), fill = templateColor).alignLeftToRightOf(cell11)
@@ -289,9 +290,20 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         if (array[2][2] == 1){
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell33)
         }
+        master = container.getChildAt(0)as RoundRect
+        cell11.removeFromParent()
+        cell12.removeFromParent()
+        cell13.removeFromParent()
+        cell21.removeFromParent()
+        cell22.removeFromParent()
+        cell23.removeFromParent()
+        cell31.removeFromParent()
+        cell32.removeFromParent()
+        cell33.removeFromParent()
 
 
-        //template().removeFromParent()
+
+
     }
 }
 
