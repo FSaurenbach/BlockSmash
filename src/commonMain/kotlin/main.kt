@@ -30,9 +30,6 @@ val allBlocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
 val random: Random = SecureRandom
 var first: Field? = null
-var leftStart:RoundRect by Delegates.notNull()
-val middleStart:RoundRect by Delegates.notNull()
-val rightStart: RoundRect by Delegates.notNull()
 suspend fun main() = Korge(
     //windowHeight = windowHeight,
     windowSize = Size(windowWidth, windowHeight),
@@ -64,9 +61,6 @@ suspend fun main() = Korge(
 
     //backgroundField!!.y -= 70
     populateField(this)
-    leftStart = roundRect(Size(cs*1.5, cs*1.5), RectCorners(5f), Colors.PURPLE)
-        .position(windowWidth*0.2, windowHeight*0.8)
-
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
     
@@ -164,7 +158,7 @@ fun checkForBlast() {
                 counter++
             }
         }
-        println("Row: $rowY, counter: $counter")
+        //println("Row: $rowY, counter: $counter")
         if (counter == 8) {
             for (block in checkedBlocks) {
                 val occupiedField = fields.find { it.pos == block.pos }
@@ -188,7 +182,7 @@ fun checkForBlast() {
                 counter++
             }
         }
-        println("Row: $columnX, counter: $counter")
+        //println("Row: $columnX, counter: $counter")
         if (counter == 8) {
             for (block in checkedBlocks) {
                 val occupiedField = fields.find { it.pos == block.pos }

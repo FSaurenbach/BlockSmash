@@ -189,7 +189,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
     }
 
     private fun twoByTwo(container: Container) {
-        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = Colors.RED)
+        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
         master = one
         container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
         val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
@@ -199,8 +199,9 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
 
     private fun bigL(container: Container) {
-        val rotation = random.get(range = 0..3)
+        var rotation = random.get(range = 0..3)
         println("Rotation: $rotation")
+        rotation = 1
         container.size = Size(cs * 3, cs * 3)
 
 
@@ -219,10 +220,12 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                 // 90°: horizontal line + upward tail
                 val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
                 val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(two)
-                val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(two)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(four)
-                master = two
+                val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(two)
+                val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(three)
+                    .alignLeftToLeftOf(three)
+                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(four)
+                    .alignLeftToLeftOf(four)
+                master = one
             }
 
             2 -> {
@@ -243,7 +246,6 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                 val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(two)
                 val five = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(four)
                 master = one
-                master.color = Colors.CHOCOLATE
             }
 
 
