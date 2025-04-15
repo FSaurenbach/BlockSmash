@@ -1,3 +1,4 @@
+import korlibs.crypto.*
 import korlibs.image.color.*
 import korlibs.image.font.*
 import korlibs.image.paint.*
@@ -10,30 +11,39 @@ import korlibs.korge.view.align.*
 import korlibs.math.geom.*
 import kotlin.math.*
 import kotlin.properties.*
+import kotlin.random.*
 
 val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
-var backgroundField: RoundRect? = null
+var backgroundField: RoundRect by Delegates.notNull()
 var fields = mutableListOf<Field>()
-var fieldSize = Size(560, 560)
+var windowWidth = (1080/4 * 1.9).toInt()
+var windowHeight = (1920/4 * 1.9).toInt()
+var fieldSize = Size(windowWidth / 1.4, windowWidth / 1.4)
 var cs = fieldSize.height / 8
 var leftOccupied = false
 var middleOccupied = false
 var rightOccupied = false
-var sContainer: Container? = null
+var sContainer: Container by Delegates.notNull()
 val occupiedFields = mutableListOf<Field>()
-val allblocks = mutableListOf<Block>()
+val allBlocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
+val random: Random = SecureRandom
+var first: Field? = null
+var leftStart:RoundRect by Delegates.notNull()
+val middleStart:RoundRect by Delegates.notNull()
+val rightStart: RoundRect by Delegates.notNull()
 suspend fun main() = Korge(
-    virtualSize = Size(480, 853),
-
+    //windowHeight = windowHeight,
+    windowSize = Size(windowWidth, windowHeight),
+    //windowWidth = windowWidth,
     title = "Block Smash",
     bgcolor = Colors["#4c65a4"],
     /**
     `gameId` is associated with the location of storage, which contains `history` and `best`.
     see [Views.realSettingsFolder]
      */
-    gameId = "io.github.sauronbach.blockSmash",
+    gameId = "de.sauronbach.blockSmash",
     forceRenderEveryFrame = false, // Optimization to reduce battery usage!
 ) {
     val background = LinearGradientPaint(
@@ -49,13 +59,17 @@ suspend fun main() = Korge(
     sContainer = this
 
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
-    backgroundField!!.centerOnStage()
-    backgroundField!!.y -= 70
-    convertToRealX(5)
+    backgroundField.centerOnStage()
+
+
+    //backgroundField!!.y -= 70
     populateField(this)
+    leftStart = roundRect(Size(cs*1.5, cs*1.5), RectCorners(5f), Colors.PURPLE)
+        .position(windowWidth*0.2, windowHeight*0.8)
 
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
+    
 
 
 }
@@ -69,44 +83,43 @@ fun populateField(container: Container) {
 
             fields.add(f)
             f.onClick {
-                println("YOU CLICKED ON ${f.fieldX} ${f.fieldY}, with the real coords: ${f.realX} ${f.realY}")
-                println("Converted to realX: ${convertToCoordX(f.fieldX)}, realY: ${convertToCoordY(f.fieldY)}")
+                println("YOU CLICKED ON ${f.fieldX} ${f.fieldY}, with the real Coordinates: ${f.realX} ${f.realY}")
+                println("Converted to realX: ${convertToCoordinateX(f.fieldX)}, realY: ${convertToCoordinateY(f.fieldY)}")
             }
         }
     }
 
     for (field in fields) {
-        // Ensure that the rows list has enough sublists to accommodate all Y values
         while (rows.size <= field.fieldY) {
             rows.add(mutableListOf())
         }
 
-        // Ensure that each row has enough sublists to accommodate all X values
         while (rows[field.fieldY].size <= field.fieldX) {
             rows[field.fieldY].add(mutableListOf())
         }
 
         rows[field.fieldY][field.fieldX].add(field)
     }
+    first = fields[0]
     println(rows)
 
 }
 
 
 fun convertToRealX(fieldCoordinate: Int): Number {
-    return backgroundField!!.x + cs * fieldCoordinate
+    return backgroundField.x + cs * fieldCoordinate
 }
 
 fun convertToRealY(fieldCoordinate: Int): Number {
-    return backgroundField!!.y + cs * fieldCoordinate
+    return backgroundField.y + cs * fieldCoordinate
 }
 
-fun convertToCoordX(realX: Int): Int {
-    return round((realX - backgroundField!!.x) / cs).toInt()
+fun convertToCoordinateX(realX: Int): Int {
+    return round((realX - backgroundField.x) / cs).toInt()
 }
 
-fun convertToCoordY(realY: Int): Int {
-    return round((realY - backgroundField!!.y) / cs).toInt()
+fun convertToCoordinateY(realY: Int): Int {
+    return round((realY - backgroundField.y) / cs).toInt()
 }
 
 fun createPieces(container: Container) {
@@ -130,14 +143,14 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        var c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!, BlockRotationHelper.getRandomRotation())
-        allblocks.add(c)
+        val c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
+        allBlocks.add(c)
 
     }
 }
 
 fun addNewPieces() {
-    if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer!!)
+    if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer)
 }
 
 
@@ -154,7 +167,7 @@ fun checkForBlast() {
         println("Row: $rowY, counter: $counter")
         if (counter == 8) {
             for (block in checkedBlocks) {
-                var occupiedField = fields.find { it.pos == block.pos }
+                val occupiedField = fields.find { it.pos == block.pos }
                 //println("Removing occupied field:$occupiedField")
                 block.removeFromParent()
                 occupiedFields.remove(occupiedField)
@@ -164,7 +177,30 @@ fun checkForBlast() {
             }
 
         }
-        //println("Current row: $rowY, counter:$counter ${checkedBlocks.count()}")
+        checkedBlocks.clear()
+    }
+    for (columnX in 0 until 8) {
+        var counter = 0
+        val checkedBlocks = mutableListOf<PlacedBlock>()
+        for (placedBlock in placedBlocks) {
+            if (placedBlock.fieldX == columnX) {
+                checkedBlocks.add(placedBlock)
+                counter++
+            }
+        }
+        println("Row: $columnX, counter: $counter")
+        if (counter == 8) {
+            for (block in checkedBlocks) {
+                val occupiedField = fields.find { it.pos == block.pos }
+                //println("Removing occupied field:$occupiedField")
+                block.removeFromParent()
+                occupiedFields.remove(occupiedField)
+                placedBlocks.remove(block)
+                occupiedField?.occupied = false
+
+            }
+
+        }
         checkedBlocks.clear()
     }
 
