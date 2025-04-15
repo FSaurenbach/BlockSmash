@@ -199,9 +199,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
 
     private fun bigL(container: Container) {
-        var rotation = random.get(range = 0..3)
+        val rotation = random.get(range = 0..3)
         println("Rotation: $rotation")
-        rotation = 1
         container.size = Size(cs * 3, cs * 3)
 
 
@@ -242,15 +241,14 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
                 // 270°: horizontal line + downward tail
                 val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
                 val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
-                val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(two)
+                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(two)
                 val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(two)
-                val five = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(four)
+                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(four)
                 master = one
             }
 
 
         }
-        //master!!.color = Colors.RED
     }
 
 
