@@ -50,12 +50,6 @@ enum class StartPosition {
     LEFT, MIDDLE, RIGHT
 }
 
-object BlockTypeHelper {
-    fun getRandomBlockType(): BlockType {
-        val blockTypes = BlockType.values().toList()
-        return blockTypes.random()  // Picks a random BlockType
-    }
-}
 
 object BlockColors {
     private val Blue get() = Colors["#264597"]
@@ -107,7 +101,7 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
         this.scale(0.5)
 
         var closeable: DraggableCloseable? = null
-        closeable = this.draggableCloseable { it ->
+        closeable = this.draggableCloseable(autoMove = false) { it ->
 
             if (it.start) {
                 println("master: $master")
@@ -115,7 +109,10 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                 this.zIndex(99)
 
                 this.scale(1)
+                this.y-=120
             }
+            it.view.x = it.viewNextXY.x
+            it.view.y = it.viewNextXY.y-120
             if (it.end) {
                 this.zIndex(0)
                 println("dragging ended: snapping!")

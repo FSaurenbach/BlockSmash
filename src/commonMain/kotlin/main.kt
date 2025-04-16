@@ -1,4 +1,3 @@
-import korlibs.crypto.*
 import korlibs.image.color.*
 import korlibs.image.font.*
 import korlibs.image.paint.*
@@ -11,7 +10,6 @@ import korlibs.korge.view.align.*
 import korlibs.math.geom.*
 import kotlin.math.*
 import kotlin.properties.*
-import kotlin.random.*
 
 val rows = mutableListOf<MutableList<MutableList<Field>>>()
 var font: BitmapFont by Delegates.notNull()
@@ -28,12 +26,9 @@ var sContainer: Container by Delegates.notNull()
 val occupiedFields = mutableListOf<Field>()
 val allBlocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
-val random: Random = SecureRandom
 var first: Field? = null
 suspend fun main() = Korge(
-    //windowHeight = windowHeight,
     windowSize = Size(windowWidth, windowHeight),
-    //windowWidth = windowWidth,
     title = "Block Smash",
     bgcolor = Colors["#4c65a4"],
     /**
@@ -41,7 +36,6 @@ suspend fun main() = Korge(
     see [Views.realSettingsFolder]
      */
     gameId = "de.sauronbach.blockSmash",
-    forceRenderEveryFrame = false, // Optimization to reduce battery usage!
 ) {
     val background = LinearGradientPaint(
         0, 0, 0, 853, cycle = CycleMethod.NO_CYCLE

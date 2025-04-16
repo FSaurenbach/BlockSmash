@@ -24,6 +24,7 @@ korge {
     targetJs()
     targetDesktop()
     targetIos()
+    androidSdk(compileSdk = 35, minSdk = 29, targetSdk = 35)
     targetAndroid()
 
     serializationJson()
