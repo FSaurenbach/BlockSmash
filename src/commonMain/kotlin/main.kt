@@ -61,6 +61,7 @@ suspend fun main() = Korge(
 
     //backgroundField!!.y -= 70
     populateField(this)
+    initBlockTypes()
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
     createPieces(this)
     
@@ -137,7 +138,7 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        val c = container.block(color, BlockTypeHelper.getRandomBlockType(), location!!)
+        val c = container.block(color, allBlockTypes.random(), location!!)
         allBlocks.add(c)
 
     }

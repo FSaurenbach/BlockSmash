@@ -3,22 +3,19 @@ import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
 import korlibs.math.geom.*
-import korlibs.math.random.get
-import kotlin.collections.count
-import kotlin.collections.listOf
-import kotlin.collections.random
-import kotlin.collections.toList
 import kotlin.math.*
 import kotlin.properties.*
-var cell11:RoundRect by Delegates.notNull()
-var cell12 :RoundRect by Delegates.notNull()
-var cell13 :RoundRect by Delegates.notNull()
-var cell21 :RoundRect by Delegates.notNull()
-var cell22 :RoundRect by Delegates.notNull()
-var cell23:RoundRect by Delegates.notNull()
-var cell31:RoundRect by Delegates.notNull()
-var cell32:RoundRect by Delegates.notNull()
-var cell33:RoundRect by Delegates.notNull()
+
+var cell11: RoundRect by Delegates.notNull()
+var cell12: RoundRect by Delegates.notNull()
+var cell13: RoundRect by Delegates.notNull()
+var cell21: RoundRect by Delegates.notNull()
+var cell22: RoundRect by Delegates.notNull()
+var cell23: RoundRect by Delegates.notNull()
+var cell31: RoundRect by Delegates.notNull()
+var cell32: RoundRect by Delegates.notNull()
+var cell33: RoundRect by Delegates.notNull()
+
 //var template: Container by Delegates.notNull()
 //var template:MutableList<RoundRect> by Delegates.notNull()
 enum class BlockType {
@@ -48,14 +45,6 @@ enum class BlockType {
     S_2X3_0, S_2X3_90, S_2X3_180, S_2X3_270
 }
 
-val L_3X3_0 = arrayOf(
-    arrayOf(1, 0, 0), arrayOf(1, 0, 0), arrayOf(1, 1, 1)
-)
-
-val L_3X3_90 = arrayOf(
-    arrayOf(1, 1, 1), arrayOf(0, 0, 1), arrayOf(0, 0, 1)
-)
-
 
 enum class StartPosition {
     LEFT, MIDDLE, RIGHT
@@ -82,10 +71,10 @@ object BlockColors {
     }
 }
 
-fun Container.block(color: RGBA, blockType: BlockType, startPosition: StartPosition) =
+fun Container.block(color: RGBA, blockType: Array<Array<Int>>, startPosition: StartPosition) =
     Block(color, blockType, startPosition).addTo(this)
 
-class Block(private var color: RGBA, blockType: BlockType, startPosition: StartPosition) : Container() {
+class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition: StartPosition) : Container() {
     private var placed: Boolean = false
     private var master: RoundRect by Delegates.notNull()
 
@@ -113,12 +102,8 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
             StartPosition.RIGHT -> this.position(windowWidth * 0.6, windowHeight * 0.8)
         }
-        when (blockType) {
-            BlockType.ONE_BY_ONE -> oneByOne(this)
-            BlockType.TWO_BY_TWO -> twoByTwo(this)
-            BlockType.L_3X3_0 -> bigL(this)
-            else -> arrayTest(this, L_3X3_0)
-        }
+
+        arrayTest(this, blockType)
         this.scale(0.5)
 
         var closeable: DraggableCloseable? = null
@@ -134,10 +119,10 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
             if (it.end) {
                 this.zIndex(0)
                 println("dragging ended: snapping!")
-                println("viewNextX: ${master.globalPos.x}, viewNextY: ${master.globalPos.y}")
+                println("viewNextX: ${this[0].globalPos.x}, viewNextY: ${this[0].globalPos.y}")
                 val blockPosition1 = Point(
-                    convertToCoordinateX(round(master.globalPos.x).toInt()), convertToCoordinateY(
-                        round(master.globalPos.y).toInt()
+                    convertToCoordinateX(round(this[0].globalPos.x).toInt()), convertToCoordinateY(
+                        round(this[0].globalPos.y).toInt()
                     )
                 )
                 for (field in fields) {
@@ -152,7 +137,7 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
 
                     if (blockPosition1 == fieldPosition && checkIfCorrectlyPlaced(this)) {
                         println("Placed correctly snapping:")
-                        master.globalPos = field.globalPos
+                        this[0].globalPos = field.globalPos
                         println("this global: ${this.globalPos}")
                         this.forEachChild {
                             sContainer.placedBlock(
@@ -194,103 +179,39 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         }
     }
 
-    private fun oneByOne(container: Container) {
-        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-        master = one
-    }
-
-    private fun twoByTwo(container: Container) {
-        val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-        master = one
-        container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
-        val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
-        container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
-            .alignTopToBottomOf(one)
-    }
-
-    private fun bigL(container: Container) {
-        val rotation = random.get(range = 0..3)
-        println("Rotation: $rotation")
-        container.size = Size(cs * 3, cs * 3)
-
-
-        when (rotation) {
-            0 -> {
-                // Original: vertical line + rightward tail
-                val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-                val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
-                val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(two)
-                val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(three)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(four)
-                master = three
-            }
-
-            1 -> {
-                // 90°: horizontal line + upward tail
-                val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-                val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
-                val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(two)
-                val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(three)
-                    .alignLeftToLeftOf(three)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(four)
-                    .alignLeftToLeftOf(four)
-                master = one
-            }
-
-            2 -> {
-                // 180°: vertical line + leftward tail
-                val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-                val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(one)
-                val three = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignTopToBottomOf(two)
-                val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignRightToLeftOf(one)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignRightToLeftOf(four)
-                master = three
-            }
-
-            3 -> {
-                // 270°: horizontal line + downward tail
-                val one = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-                val two = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(one)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignLeftToRightOf(two)
-                val four = container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(two)
-                container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).alignBottomToTopOf(four)
-                master = one
-            }
-
-
-        }
-    }
 
     private fun arrayTest(container: Container, array: Array<Array<Int>>) {
 
-        if (array[0][0] == 1){
+        if (array[0][0] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell11)
         }
-        if (array[0][1] == 1){
+        if (array[0][1] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell12)
         }
-        if (array[0][2] == 1){
+        if (array[0][2] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell13)
         }
-        if (array[1][0] == 1){
+        if (array[1][0] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell21)
         }
-        if (array[1][1] == 1){
+        if (array[1][1] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell22)
         }
-        if (array[1][2] == 1){
+        if (array[1][2] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell23)
         }
-        if (array[2][0] == 1){
+        if (array[2][0] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell31)
         }
-        if (array[2][1] == 1){
+        if (array[2][1] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell32)
         }
-        if (array[2][2] == 1){
+        if (array[2][2] == 1) {
             container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell33)
         }
-        master = container.getChildAt(0)as RoundRect
+        println("c: ${container[0].globalPos}")
+        if (container[0] is RoundRect) master = container[0] as RoundRect
+        println(container[9])
         cell11.removeFromParent()
         cell12.removeFromParent()
         cell13.removeFromParent()
@@ -300,8 +221,6 @@ class Block(private var color: RGBA, blockType: BlockType, startPosition: StartP
         cell31.removeFromParent()
         cell32.removeFromParent()
         cell33.removeFromParent()
-
-
 
 
     }
