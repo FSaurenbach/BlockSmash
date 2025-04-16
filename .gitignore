@@ -1,4 +1,4 @@
-/.gradle
+
 /.idea
 /build
 *.iml
@@ -6,5 +6,4 @@
 *.log
 /local.properties
 /deps
-gradle
 .run
