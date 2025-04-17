@@ -27,6 +27,9 @@ val occupiedFields = mutableListOf<Field>()
 val allBlocks = mutableListOf<Block>()
 var placedBlocks = mutableListOf<PlacedBlock>()
 var first: Field? = null
+val leftStart = Point(windowWidth * 0.2, windowHeight * 0.8)
+val middleStart = Point(windowWidth * 0.4, windowHeight * 0.8)
+val rightStart = Point(windowWidth * 0.6, windowHeight * 0.8)
 suspend fun main() = Korge(
     windowSize = Size(windowWidth, windowHeight),
     title = "Block Smash",
@@ -190,9 +193,3 @@ fun checkForBlast() {
     }
 
 }
-
-
-
-
-
-

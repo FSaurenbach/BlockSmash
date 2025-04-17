@@ -63,9 +63,9 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
             .alignTopToBottomOf(cell23)
 
         when (startPosition) {
-            StartPosition.LEFT -> this.position(windowWidth * 0.2, windowHeight * 0.8)
-            StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
-            StartPosition.RIGHT -> this.position(windowWidth * 0.6, windowHeight * 0.8)
+            StartPosition.LEFT -> position(leftStart)
+            StartPosition.MIDDLE -> position(middleStart)
+            StartPosition.RIGHT -> position(rightStart)
         }
 
         initBlock(blockType)
@@ -135,10 +135,11 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                 }
                 if (!placed) {
                     this.scale(0.5)
+
                     when (startPosition) {
-                        StartPosition.LEFT -> this.position(windowWidth * 0.2, windowHeight * 0.8)
-                        StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
-                        StartPosition.RIGHT -> this.position(windowWidth * 0.6, windowHeight * 0.8)
+                        StartPosition.LEFT -> position(leftStart)
+                        StartPosition.MIDDLE -> position(middleStart)
+                        StartPosition.RIGHT -> position(rightStart)
                     }
                 }
             }
