@@ -31,10 +31,6 @@ suspend fun main() = Korge(
     windowSize = Size(windowWidth, windowHeight),
     title = "Block Smash",
     bgcolor = Colors["#4c65a4"],
-    /**
-    `gameId` is associated with the location of storage, which contains `history` and `best`.
-    see [Views.realSettingsFolder]
-     */
     gameId = "de.sauronbach.blockSmash",
 ) {
     val background = LinearGradientPaint(
