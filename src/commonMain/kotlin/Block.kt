@@ -124,7 +124,7 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                         //println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
                         addNewPieces()
                         allBlocks.remove(this)
-                        println("count:" + occupiedFields.count())
+                        //println("count:" + occupiedFields.count())
                         master.removeFromParent()
                         this.removeFromParent()
                         checkForBlast()
@@ -197,7 +197,7 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
 
 fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
     val testsToPass = wholeBlock.children.count()
-    println("tests to pass: $testsToPass")
+    //println("tests to pass: $testsToPass")
     var testsPassed = 0
 
     for (block in wholeBlock.children) {
@@ -228,7 +228,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
             field.occupied = true
         }
     }
-    println("test passed: ${testsPassed == testsToPass}")
+    //println("test passed: ${testsPassed == testsToPass}")
     return testsPassed == testsToPass
 }
 

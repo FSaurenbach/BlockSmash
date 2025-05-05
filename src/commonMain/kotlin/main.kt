@@ -34,6 +34,7 @@ val rightStart = Point(windowWidth * 0.6, windowHeight * 0.8)
 var score: Int = 0
 var scoreCounter: TextBlock by Delegates.notNull()
 var scoreBG:RoundRect by Delegates.notNull()
+var bpv:BlockPoolValidator by Delegates.notNull()
 suspend fun main() = Korge(
     windowSize = Size(windowWidth, windowHeight),
     title = "Block Smash",
@@ -54,6 +55,9 @@ suspend fun main() = Korge(
 
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
     backgroundField.centerOnStage()
+    bpv = BlockPoolValidator()
+
+
     val scoreFieldBg = roundRect(Size(0.2 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
 
     scoreFieldBg.centerXOnStage()
@@ -163,6 +167,7 @@ fun addNewPieces() {
 
 
 fun checkForBlast() {
+
     var rowsBlasted = 0
     for (rowY in 0 until 8) {
         var counter = 0
@@ -214,6 +219,7 @@ fun checkForBlast() {
         }
         checkedBlocks.clear()
     }
+    bpv.updateArray()
     if (rowsBlasted != 0) updateScore(rowsBlasted)
 
 
