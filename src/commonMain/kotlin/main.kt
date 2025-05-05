@@ -136,6 +136,7 @@ fun convertToCoordinateY(realY: Int): Int {
 
 fun createPieces(container: Container) {
     var location: StartPosition? = null
+    var pool = mutableListOf<Array<Array<Int>>>()
     for (i in 0..2) {
 
         when {
@@ -155,10 +156,13 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        val c = container.block(color, allBlockTypes.random(), location!!)
+        val randomBlock = allBlockTypes.random()
+        pool.add(randomBlock)
+        val c = container.block(color, randomBlock, location!!)
         allBlocks.add(c)
 
     }
+    bpv.checkPool(pool)
 }
 
 fun addNewPieces() {
