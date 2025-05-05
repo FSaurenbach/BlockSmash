@@ -33,6 +33,8 @@ val leftStart = Point(windowWidth * 0.2, windowHeight * 0.8)
 val middleStart = Point(windowWidth * 0.4, windowHeight * 0.8)
 val rightStart = Point(windowWidth * 0.6, windowHeight * 0.8)
 var score: Int = 0
+var scoreCounter: TextBlock by Delegates.notNull()
+var scoreBG:RoundRect by Delegates.notNull()
 suspend fun main() = Korge(
     windowSize = Size(windowWidth, windowHeight),
     title = "Block Smash",
@@ -64,10 +66,10 @@ suspend fun main() = Korge(
         size = scoreFieldBg.size
 
     }
-    val scoreBG = roundRect(Size(0.15 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
+    scoreBG= roundRect(Size(0.15 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
     scoreBG.centerXOn(scoreFieldBg)
     scoreBG.alignTopToBottomOf(scoreFieldBg)
-    val scoreCounter = scoreBG.textBlock {
+    scoreCounter = scoreBG.textBlock {
         text = RichTextData("$score", color = Colors.BLACK, textSize = 35f)
         align = TextAlignment.CENTER
         size = scoreBG.size
@@ -162,6 +164,7 @@ fun addNewPieces() {
 
 
 fun checkForBlast() {
+    var rowsBlasted = 0
     for (rowY in 0 until 8) {
         var counter = 0
         val checkedBlocks = mutableListOf<PlacedBlock>()
@@ -180,6 +183,7 @@ fun checkForBlast() {
                 occupiedFields.remove(occupiedField)
                 placedBlocks.remove(block)
                 occupiedField?.occupied = false
+                rowsBlasted++
 
             }
 
@@ -204,11 +208,19 @@ fun checkForBlast() {
                 occupiedFields.remove(occupiedField)
                 placedBlocks.remove(block)
                 occupiedField?.occupied = false
+                rowsBlasted++
 
             }
 
         }
         checkedBlocks.clear()
     }
+    if (rowsBlasted != 0) updateScore(rowsBlasted)
+
+
+}
+fun updateScore(rowsBlasted:Int){
+    score += rowsBlasted*15
+    scoreCounter.text =  RichTextData("$score", color = Colors.BLACK, textSize = 35f)
 
 }
