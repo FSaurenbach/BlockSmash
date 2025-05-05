@@ -8,7 +8,6 @@ import korlibs.korge.*
 import korlibs.korge.input.*
 import korlibs.korge.view.*
 import korlibs.korge.view.align.*
-import korlibs.logger.*
 import korlibs.math.geom.*
 import kotlin.math.*
 import kotlin.properties.*
@@ -55,7 +54,7 @@ suspend fun main() = Korge(
 
     backgroundField = roundRect(fieldSize, RectCorners(5f), Colors["#202443"])
     backgroundField.centerOnStage()
-    var scoreFieldBg = roundRect(Size(0.2 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
+    val scoreFieldBg = roundRect(Size(0.2 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
 
     scoreFieldBg.centerXOnStage()
     scoreFieldBg.positionY(0.05f * windowHeight)
