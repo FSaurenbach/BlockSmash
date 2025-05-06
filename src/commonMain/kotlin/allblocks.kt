@@ -126,9 +126,7 @@ val S_2X3_270 = S_2X3_90
 
 
 // === INIT FUNCTION ===
-fun initBlockTypes() {/*
-    allBlockTypes = listOf(THREE_BY_THREE)
-    return*/
+fun initBlockTypes() {
     allBlockTypes = listOf(
         ONE_BY_ONE,
         ONE_BY_TWO,
