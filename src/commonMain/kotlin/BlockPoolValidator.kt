@@ -34,24 +34,15 @@ class BlockPoolValidator {
     }
 
     fun checkPool(pool: MutableList<block>) {
-        var block1: block? = null
-        var block2: block? = null
-        var block3: block? = null
-
+        val blocks = mutableListOf<block>()
         for (block in pool) {
-            if (block1 == null) block1 = block
-            if (block2 == null) block2 = block
-            if (block3 == null) block3 = block
+            blocks.add(block)
             println("NEW BLOCK")
-            for (row in block) {
-                println(row.joinToString(" ") { cell ->
-                    if (cell == 0) "·" else "■"
-                })
-            }
+
         }
-        var blocks = listOf(block1!!, block2!!, block3!!)
+
         var directFitCouter = 0
-        for (block in blocks){
+        for (block in blocks) {
             if (checkDirectFit(block)) directFitCouter++
 
         }
@@ -60,37 +51,41 @@ class BlockPoolValidator {
 
     }
 
-    fun checkDirectFit(block: block): Boolean {
-        for (r in 0..7) {
-            for (c in 0..7) {
-                // Check if the block can fit at this position
-                var canFit = true
-                for (dr in block.indices) {
-                    for (dc in block[dr].indices) {
-                        if (block[dr][dc] == 1) {
-                            if (r + dr !in 0..7 || c + dc !in 0..7 || gameField[r + dr][c + dc] == 1) {
-                                // If the block doesn't fit or collides with an existing block
-                                canFit = false
-                                break
-                            }
-                        }
-                    }
-                    if (!canFit) break
-                }
-
-                // If the block fits, place it
-                if (canFit) {
-                    return true
-                    /*for (dr in block.indices) {
-                        for (dc in block[dr].indices) {
-                            if (block[dr][dc] == 1) {
-                                gameField[r + dr][c + dc] = 1
-                            }
-                        }
-                    }*/
-                }
-            }
+    private fun checkDirectFit(block: block): Boolean {
+        var verticalLength = 0
+        var horizontalLength = 0
+        if (block[0][0] == 1 || block[1][0] == 1 || block[2][0] == 1) {
+            verticalLength++
         }
+        if (block[0][1] == 1 || block[1][1] == 1 || block[2][1] == 1) {
+            verticalLength++
+        }
+        if (block[0][2] == 1 || block[1][2] == 1 || block[2][2] == 1) {
+            verticalLength++
+        }
+        // Horizontal Length
+        if (block[0][0] == 1 || block[0][1] == 1 || block[0][2] == 1) {
+            horizontalLength++
+        }
+        if (block[1][0] == 1 || block[1][1] == 1 || block[1][2] == 1) {
+            horizontalLength++
+        }
+        if (block[2][0] == 1 || block[2][1] == 1 || block[2][2] == 1) {
+            horizontalLength++
+        }
+
+        println("VERTICAL LENGTH: $verticalLength")
+        println("HORIZONTAL LENGTH: $horizontalLength")
+        for (row in block) {
+            println(row.joinToString(" ") { cell ->
+                if (cell == 0) "·" else "■"
+            })
+        }
+
+
+
+
+
         return false
     }
 
