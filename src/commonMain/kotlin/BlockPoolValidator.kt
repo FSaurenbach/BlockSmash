@@ -37,7 +37,6 @@ class BlockPoolValidator {
         val blocks = mutableListOf<block>()
         for (block in pool) {
             blocks.add(block)
-            println("NEW BLOCK")
 
         }
 
@@ -73,20 +72,60 @@ class BlockPoolValidator {
         if (block[2][0] == 1 || block[2][1] == 1 || block[2][2] == 1) {
             horizontalLength++
         }
-
+/*
         println("VERTICAL LENGTH: $verticalLength")
         println("HORIZONTAL LENGTH: $horizontalLength")
         for (row in block) {
             println(row.joinToString(" ") { cell ->
                 if (cell == 0) "·" else "■"
             })
+        }*/
+        var possibleLocations = 0
+        for (row in 0..7) {
+            for (col in 0..7) {
+                // Check if the give block could be placed at these coordinates
+                var valid = true
+                var counter = 0
+                for (blockRow in 0..2) {
+                    for (blockCol in 0..2) {
+                        val r = row + blockRow
+                        val c = col + blockCol
+
+                        if (r > 7 || c > 7) {
+                            valid = false
+                            break
+                        }
+                    }
+                }
+                if (valid) {
+                    for (blockRow in 0..2) {
+                        for (blockCol in 0..2) {
+                            if (row + blockRow <= 7 && col + blockCol <= 7) {
+
+
+                                if (block[blockRow][blockCol] == 0) counter++
+                                if (block[blockRow][blockCol] == 1) {
+
+                                    if (gameField[row + blockRow][col + blockCol] == 0) counter++
+
+                                }
+                            }
+                        }
+                    }
+                }
+                if (counter == 9) {
+                    possibleLocations++
+                    /*println("POSSIBLE ROW/COL: $row, $col")*/
+                }
+            }
         }
 
+        println("possibleLocations: $possibleLocations")
 
 
 
 
-        return false
+        return if(possibleLocations !=0) true else false
     }
 
 }
