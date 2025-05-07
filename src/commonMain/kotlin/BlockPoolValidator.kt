@@ -58,7 +58,6 @@ class BlockPoolValidator {
             TODO("check if problem")
 
         }
-        var orders = 6
 
     }
 
@@ -97,9 +96,9 @@ class BlockPoolValidator {
 
         for (row in 0..7) {
             for (col in 0..7) {
-                var counter = 0
+                var amount = 0
                 var amountToMatch = 0
-                var possible = true
+                var valid = true
 
                 for (blockRow in 0..2) {
                     for (blockCol in 0..2) {
@@ -109,22 +108,22 @@ class BlockPoolValidator {
                             val targetCol = col + blockCol
 
                             if (targetRow > 7 || targetCol > 7) {
-                                possible = false
+                                valid = false
                                 break
                             }
 
                             if (gameField[targetRow][targetCol] == 0) {
-                                counter++
+                                amount++
                             } else {
-                                possible = false
+                                valid = false
                                 break
                             }
                         }
                     }
-                    if (!possible) break
+                    if (!valid) break
                 }
 
-                if (possible && counter == amountToMatch) {
+                if (valid && amount == amountToMatch) {
                     pLAmount++
                     println("POSSIBLE ROW/COL: $row, $col")
                 }
