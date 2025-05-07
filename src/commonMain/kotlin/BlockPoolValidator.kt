@@ -1,5 +1,3 @@
-import kotlin.properties.*
-
 typealias Board = Array<IntArray>
 typealias block = Array<Array<Int>>
 
@@ -41,17 +39,30 @@ class BlockPoolValidator {
 
         }
 
-        var directFitCouter = 0
+        var directFitCounter = 0
+        val directBlocks = mutableListOf<block>()
+        val problemBlocks = mutableListOf<block>()
         for (block in blocks) {
-            if (checkDirectFit(block)) directFitCouter++
+            if (checkPossibleLocations(block) != 0) {
+                directFitCounter++
+                directBlocks.add(block)
+            } else {
+                problemBlocks.add(block)
+            }
 
         }
-        println("Amount of blocks that fit directly: $directFitCouter")
+
+        println("Amount of blocks that fit directly: $directFitCounter")
+        if (directFitCounter < 3) {
+
+            TODO("check if problem")
+
+        }
         var orders = 6
 
     }
 
-    private fun checkDirectFit(block: block): Boolean {
+    private fun checkPossibleLocations(block: block): Int {
         var verticalLength = 0
         var horizontalLength = 0
         if (block[0][0] == 1 || block[1][0] == 1 || block[2][0] == 1) {
@@ -81,8 +92,8 @@ class BlockPoolValidator {
                 if (cell == 0) "·" else "■"
             })
         }
-        var possibleLocations = 0
-        var possibleLocations2 = 0
+        var pLAmount = 0 /*Amount of possible locations*/
+        var pLList = mutableListOf<block>() /*List of possible locations*/
 
         for (row in 0..7) {
             for (col in 0..7) {
@@ -114,7 +125,7 @@ class BlockPoolValidator {
                 }
 
                 if (possible && counter == amountToMatch) {
-                    possibleLocations++
+                    pLAmount++
                     println("POSSIBLE ROW/COL: $row, $col")
                 }
             }
@@ -122,13 +133,12 @@ class BlockPoolValidator {
 
 
 
-        println("possibleLocations: $possibleLocations")
-        println("possible if field was empty: $possibleLocations2")
+        println("possibleLocations: $pLAmount")
 
 
 
 
-        return possibleLocations != 0
+        return pLAmount
     }
 
 }

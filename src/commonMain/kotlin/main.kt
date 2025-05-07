@@ -44,9 +44,8 @@ suspend fun main() = Korge(
     val background = LinearGradientPaint(
         0, 0, 0, 853, cycle = CycleMethod.NO_CYCLE
     ) {
-        // Subtle blue gradient, slight change from light to slightly darker blue
-        addColorStop(0.0, RGBA(95, 146, 255)) // Lighter blue at the top
-        addColorStop(1.0, RGBA(65, 102, 163)) // Slightly darker blue at the bottom
+        addColorStop(0.0, RGBA(95, 146, 255))
+        addColorStop(1.0, RGBA(65, 102, 163))
     }
     roundRect(Size(1920, 1080), RectCorners(5f), background).centerOnStage()
     font = resourcesVfs["clear_sans.fnt"].readBitmapFont()
@@ -136,7 +135,7 @@ fun convertToCoordinateY(realY: Int): Int {
 
 fun createPieces(container: Container) {
     var location: StartPosition? = null
-    var pool = mutableListOf<Array<Array<Int>>>()
+    val pool = mutableListOf<Array<Array<Int>>>()
     for (i in 0..2) {
 
         when {
