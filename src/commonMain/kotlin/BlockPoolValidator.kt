@@ -1,5 +1,5 @@
 typealias Board = Array<IntArray>
-typealias block = Array<Array<Int>>
+typealias blockBlueprint = Array<Array<Int>>
 
 class BlockPoolValidator {
     private var gameField: Board = Array(8) { IntArray(8) { 0 } }
@@ -31,21 +31,24 @@ class BlockPoolValidator {
         gameField = Array(8) { IntArray(8) { 0 } }
     }
 
-    fun checkPool(pool: MutableList<block>) {
+    fun checkPool(pool: MutableList<blockBlueprint>) {
         updateArray()
-        val blocks = mutableListOf<block>()
+        val blocks = mutableListOf<blockBlueprint>()
         for (block in pool) {
             blocks.add(block)
 
         }
 
         var directFitCounter = 0
-        val directBlocks = mutableListOf<block>()
-        val problemBlocks = mutableListOf<block>()
+        val directBlocks = mutableListOf<blockBlueprint>()
+        val directBlockPL = mutableListOf<List<Pair<Int, Int>>>()
+        val problemBlocks = mutableListOf<blockBlueprint>()
         for (block in blocks) {
-            if (checkPossibleLocations(block) != 0) {
+            val pLList = checkPossibleLocations(block)
+            if (pLList.isNotEmpty()) {
                 directFitCounter++
                 directBlocks.add(block)
+                directBlockPL.add(pLList)
             } else {
                 problemBlocks.add(block)
             }
@@ -54,14 +57,38 @@ class BlockPoolValidator {
 
         println("Amount of blocks that fit directly: $directFitCounter")
         if (directFitCounter < 3) {
+            var currentBlock = 0
+            for (block in directBlocks) {
+                // Check individual blocks if placing them anywhere on the field can result in the problem blocks being placeable
+                for (positionPair in directBlockPL[currentBlock]) {
+                    val field = gameField
+                    for (blockRow in 0..2) {
+                        for (blockCol in 0..2) {
+                            if (block[blockRow][blockCol] == 1) {
+                                val targetRow = positionPair.first + blockRow
+                                val targetCol = positionPair.second + blockCol
+                                field[targetRow][targetCol] = 1
 
-            TODO("check if problem")
+
+                            }
+
+
+                        }
+                    }
+                    // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
+                    if(checkForBlast(field)) println(" There could technically be a combination. we have tested one")
+                    //field[positionPair.first][positionPair.second]
+
+                }
+                currentBlock++
+            }
+            //TODO("check if problem")
 
         }
 
     }
 
-    private fun checkPossibleLocations(block: block): Int {
+    private fun checkPossibleLocations(block: blockBlueprint): MutableList<Pair<Int, Int>> {
         var verticalLength = 0
         var horizontalLength = 0
         if (block[0][0] == 1 || block[1][0] == 1 || block[2][0] == 1) {
@@ -92,7 +119,7 @@ class BlockPoolValidator {
             })
         }
         var pLAmount = 0 /*Amount of possible locations*/
-        var pLList = mutableListOf<block>() /*List of possible locations*/
+        var pLList = mutableListOf<Pair<Int, Int>>() /*List of possible locations*/
 
         for (row in 0..7) {
             for (col in 0..7) {
@@ -125,6 +152,7 @@ class BlockPoolValidator {
 
                 if (valid && amount == amountToMatch) {
                     pLAmount++
+                    pLList.add(Pair(row, col))
                     println("POSSIBLE ROW/COL: $row, $col")
                 }
             }
@@ -137,8 +165,27 @@ class BlockPoolValidator {
 
 
 
-        return pLAmount
+        return pLList
     }
 
+    private fun checkForBlast(field: Board): Boolean {
+
+        for (row in 0..7) {
+            val ocpFields = mutableListOf<Pair<Int, Int>>()
+            for (col in 0..7) {
+                if (field[row][col] == 1) {
+                    ocpFields.add(Pair(row, col))
+                }
+            }
+            if (ocpFields.count() == 8) {
+                for ((r, c) in ocpFields) {
+                    field[r][c] = 0
+
+                }
+                return true
+            }
+        }
+        return false
+    }
 }
 
