@@ -8,14 +8,23 @@ class BlockPoolValidator {
         printBoard()
     }
 
-    private fun printBoard() {
+    private fun printBoard(board:Board = gameField) {
         println("Aktueller Spielstand:\n")
-        for (row in gameField) {
+        for (row in board) {
             println(row.joinToString(" ") { cell ->
                 if (cell == 0) "·" else "■"
             })
         }
     }
+    private fun printBlock(block: blockBlueprint){
+        for (row in block) {
+            println(row.joinToString(" ") { cell ->
+                if (cell == 0) "·" else "■"
+            })
+        }
+    }
+    fun copyBoard(src: Board): Board =
+        Array(src.size) { row -> src[row].copyOf() }
 
     fun updateArray(): Board? {
         this.reset()
@@ -61,12 +70,18 @@ class BlockPoolValidator {
             for (block in directBlocks) {
                 // Check individual blocks if placing them anywhere on the field can result in the problem blocks being placeable
                 for (positionPair in directBlockPL[currentBlock]) {
-                    val field = gameField
+                    val field = copyBoard(gameField)
+                    println("PLACING NEW:")
+
+                    printBlock(block)
+                    printBoard(field)
                     for (blockRow in 0..2) {
                         for (blockCol in 0..2) {
                             if (block[blockRow][blockCol] == 1) {
                                 val targetRow = positionPair.first + blockRow
                                 val targetCol = positionPair.second + blockCol
+
+
                                 field[targetRow][targetCol] = 1
 
 
@@ -75,6 +90,9 @@ class BlockPoolValidator {
 
                         }
                     }
+
+                    println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
+                    printBoard(field)
                     // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
                     if(checkForBlast(field)) println(" There could technically be a combination. we have tested one")
                     //field[positionPair.first][positionPair.second]
@@ -119,7 +137,7 @@ class BlockPoolValidator {
             })
         }
         var pLAmount = 0 /*Amount of possible locations*/
-        var pLList = mutableListOf<Pair<Int, Int>>() /*List of possible locations*/
+        val pLList = mutableListOf<Pair<Int, Int>>() /*List of possible locations*/
 
         for (row in 0..7) {
             for (col in 0..7) {
@@ -153,7 +171,7 @@ class BlockPoolValidator {
                 if (valid && amount == amountToMatch) {
                     pLAmount++
                     pLList.add(Pair(row, col))
-                    println("POSSIBLE ROW/COL: $row, $col")
+                    //println("POSSIBLE ROW/COL: $row, $col")
                 }
             }
         }
