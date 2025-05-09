@@ -64,7 +64,10 @@ class BlockPoolValidator {
             }
 
         }
-
+        var combinationList = mutableListOf<blockBlueprint>()
+        directBlocks.forEach {
+            combinationList.add(it)
+        }
         println("Amount of blocks that fit directly: $directFitCounter")
         if (directFitCounter < 3) {
             var validPool = true
@@ -87,12 +90,13 @@ class BlockPoolValidator {
                                 field[targetRow][targetCol] = 1
 
 
+
                             }
 
 
                         }
                     }
-
+                    combinationList.remove(block)
                     println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
                     printBoard(field)
                     // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
@@ -103,6 +107,16 @@ class BlockPoolValidator {
                             if (checkPossibleLocations(problem).isNotEmpty()){
                                 println("A PROBLEM CAN BE RESOLVED. NO FURTHER TESTING IS NEEDED.")
                                 problemBlocks.remove(problem)
+                            }
+                        }
+                        if (problemBlocks.isNotEmpty()){
+                            if (combinationList.isNotEmpty()){
+                                for (comb in combinationList){
+                                    var locs = checkPossibleLocations(comb)
+                                    if (locs.isNotEmpty()){
+
+                                    }
+                                }
                             }
                         }
 
