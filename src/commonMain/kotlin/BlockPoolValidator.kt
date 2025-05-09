@@ -8,7 +8,7 @@ class BlockPoolValidator {
         printBoard()
     }
 
-    private fun printBoard(board:Board = gameField) {
+    private fun printBoard(board: Board = gameField) {
         println("Aktueller Spielstand:\n")
         for (row in board) {
             println(row.joinToString(" ") { cell ->
@@ -16,15 +16,16 @@ class BlockPoolValidator {
             })
         }
     }
-    private fun printBlock(block: blockBlueprint){
+
+    private fun printBlock(block: blockBlueprint) {
         for (row in block) {
             println(row.joinToString(" ") { cell ->
                 if (cell == 0) "·" else "■"
             })
         }
     }
-    fun copyBoard(src: Board): Board =
-        Array(src.size) { row -> src[row].copyOf() }
+
+    private fun copyBoard(src: Board): Board = Array(src.size) { row -> src[row].copyOf() }
 
     fun updateArray(): Board? {
         this.reset()
@@ -40,7 +41,7 @@ class BlockPoolValidator {
         gameField = Array(8) { IntArray(8) { 0 } }
     }
 
-    fun checkPool(pool: MutableList<blockBlueprint>) {
+    fun checkPool(pool: MutableList<blockBlueprint>): Boolean {
         updateArray()
         val blocks = mutableListOf<blockBlueprint>()
         for (block in pool) {
@@ -66,6 +67,7 @@ class BlockPoolValidator {
 
         println("Amount of blocks that fit directly: $directFitCounter")
         if (directFitCounter < 3) {
+            var validPool = true
             var currentBlock = 0
             for (block in directBlocks) {
                 // Check individual blocks if placing them anywhere on the field can result in the problem blocks being placeable
@@ -94,16 +96,31 @@ class BlockPoolValidator {
                     println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
                     printBoard(field)
                     // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
-                    if(checkForBlast(field)) println(" There could technically be a combination. we have tested one")
-                    //field[positionPair.first][positionPair.second]
+                    if (checkForBlast(field)) {
+                        println(" There could technically be a combination. we have tested one")
+                        //check if placement is possible now
+                        for (problem in problemBlocks){
+                            if (checkPossibleLocations(problem).isNotEmpty()){
+                                println("A PROBLEM CAN BE RESOLVED. NO FURTHER TESTING IS NEEDED.")
+                                problemBlocks.remove(problem)
+                            }
+                        }
+
+
+                    } else {
+
+                        validPool = false
+                    }
+
 
                 }
                 currentBlock++
             }
-            //TODO("check if problem")
+            /*If all problems have been resolved set the pool as valid!*/
+            if (problemBlocks.isEmpty()) validPool = true
+            return validPool
 
-        }
-
+        } else return true
     }
 
     private fun checkPossibleLocations(block: blockBlueprint): MutableList<Pair<Int, Int>> {
