@@ -16,35 +16,6 @@ var cell31: RoundRect by Delegates.notNull()
 var cell32: RoundRect by Delegates.notNull()
 var cell33: RoundRect by Delegates.notNull()
 
-//var template: Container by Delegates.notNull()
-//var template:MutableList<RoundRect> by Delegates.notNull()
-enum class BlockType {
-    // Single block
-    ONE_BY_ONE,
-
-    // Straight blocks (all rotations are the same)
-    ONE_BY_TWO, TWO_BY_ONE, ONE_BY_THREE, THREE_BY_ONE, ONE_BY_FOUR, FOUR_BY_ONE, ONE_BY_FIVE, FIVE_BY_ONE,
-
-    // Square blocks (all rotations are the same)
-    TWO_BY_TWO, THREE_BY_THREE,
-
-    // L-Shaped blocks (all rotations)
-    L_2X2_0, L_2X2_90, L_2X2_180, L_2X2_270,
-
-    L_2X3_0, L_2X3_90, L_2X3_180, L_2X3_270,
-
-    L_3X3_0, L_3X3_90, L_3X3_180, L_3X3_270,
-
-    // T-Shaped blocks (all rotations)
-    T_2X3_0, T_2X3_90, T_2X3_180, T_2X3_270,
-
-    // Rectangle blocks (all rotations)
-    TWO_BY_THREE_0, TWO_BY_THREE_90, THREE_BY_TWO_0, THREE_BY_TWO_90,
-
-    // S-Shaped blocks (all rotations)
-    S_2X3_0, S_2X3_90, S_2X3_180, S_2X3_270
-}
-
 
 enum class StartPosition {
     LEFT, MIDDLE, RIGHT
@@ -52,19 +23,19 @@ enum class StartPosition {
 
 
 object BlockColors {
-    private val Blue get() = Colors["#264597"]
-    private val Red get() = Colors["#e53935"]
-    private val Green get() = Colors["#0cdc2d"]
-    private val Yellow get() = Colors["#ffff00"]
-    private val Purple get() = Colors["#800080"]
-    private val Orange get() = Colors["#ff6600"]
+    private val Blue = Colors["#264597"]
+    private val Red = Colors["#e53935"]
+    private val Green = Colors["#0cdc2d"]
+    private val Yellow = Colors["#ffff00"]
+    private val Purple = Colors["#800080"]
+    private val Orange = Colors["#ff6600"]
+
+    private val colorList = listOf(Blue, Red, Green, Yellow, Purple, Orange)
 
     fun getRandomColor(): RGBA {
-        val colors = listOf(Blue, Red, Green, Yellow, Purple, Orange)
-        return colors.random()  // Picks a random RGBA object
+        return colorList.random()
     }
 }
-
 fun Container.block(color: RGBA, blockType: Array<Array<Int>>, startPosition: StartPosition) =
     Block(color, blockType, startPosition).addTo(this)
 
@@ -92,12 +63,12 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
             .alignTopToBottomOf(cell23)
 
         when (startPosition) {
-            StartPosition.LEFT -> this.position(windowWidth * 0.2, windowHeight * 0.8)
-            StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
-            StartPosition.RIGHT -> this.position(windowWidth * 0.6, windowHeight * 0.8)
+            StartPosition.LEFT -> position(leftStart)
+            StartPosition.MIDDLE -> position(middleStart)
+            StartPosition.RIGHT -> position(rightStart)
         }
 
-        arrayTest(this, blockType)
+        initBlock(blockType)
         this.scale(0.5)
 
         var closeable: DraggableCloseable? = null
@@ -109,10 +80,10 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                 this.zIndex(99)
 
                 this.scale(1)
-                this.y-=120
+                this.y -= 150
             }
             it.view.x = it.viewNextXY.x
-            it.view.y = it.viewNextXY.y-120
+            it.view.y = it.viewNextXY.y - 150
             if (it.end) {
                 this.zIndex(0)
                 println("dragging ended: snapping!")
@@ -153,7 +124,7 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                         //println("Left: $leftOccupied, middle: $middleOccupied, right: $rightOccupied")
                         addNewPieces()
                         allBlocks.remove(this)
-                        println("count:" + occupiedFields.count())
+                        //println("count:" + occupiedFields.count())
                         master.removeFromParent()
                         this.removeFromParent()
                         checkForBlast()
@@ -164,10 +135,11 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                 }
                 if (!placed) {
                     this.scale(0.5)
+
                     when (startPosition) {
-                        StartPosition.LEFT -> this.position(windowWidth * 0.2, windowHeight * 0.8)
-                        StartPosition.MIDDLE -> this.position(windowWidth * 0.4, windowHeight * 0.8)
-                        StartPosition.RIGHT -> this.position(windowWidth * 0.6, windowHeight * 0.8)
+                        StartPosition.LEFT -> position(leftStart)
+                        StartPosition.MIDDLE -> position(middleStart)
+                        StartPosition.RIGHT -> position(rightStart)
                     }
                 }
             }
@@ -177,38 +149,38 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
     }
 
 
-    private fun arrayTest(container: Container, array: Array<Array<Int>>) {
+    private fun initBlock(array: Array<Array<Int>>) {
 
         if (array[0][0] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell11)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell11)
         }
         if (array[0][1] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell12)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell12)
         }
         if (array[0][2] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell13)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell13)
         }
         if (array[1][0] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell21)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell21)
         }
         if (array[1][1] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell22)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell22)
         }
         if (array[1][2] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell23)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell23)
         }
         if (array[2][0] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell31)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell31)
         }
         if (array[2][1] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell32)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell32)
         }
         if (array[2][2] == 1) {
-            container.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell33)
+            this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell33)
         }
-        println("c: ${container[0].globalPos}")
-        if (container[0] is RoundRect) master = container[0] as RoundRect
-        println(container[9])
+        println("c: ${this[0].globalPos}")
+        if (this[0] is RoundRect) master = this[0] as RoundRect
+        println(this[9])
         cell11.removeFromParent()
         cell12.removeFromParent()
         cell13.removeFromParent()
@@ -225,7 +197,7 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
 
 fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
     val testsToPass = wholeBlock.children.count()
-    println("tests to pass: $testsToPass")
+    //println("tests to pass: $testsToPass")
     var testsPassed = 0
 
     for (block in wholeBlock.children) {
@@ -256,7 +228,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
             field.occupied = true
         }
     }
-    println("test passed: ${testsPassed == testsToPass}")
+    //println("test passed: ${testsPassed == testsToPass}")
     return testsPassed == testsToPass
 }
 

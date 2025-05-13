@@ -9,8 +9,8 @@ fun Container.placedBlock(color: RGBA, fieldX: Int, fieldY: Int) =
 class PlacedBlock(color: RGBA, var fieldX: Int,var fieldY: Int) : Container() {
     init {
         roundRect(Size(cs, cs), RectCorners(5f), fill = color)
-        var realX = convertToRealX(fieldX).toInt()
-        var realY = convertToRealY(fieldY).toInt()
+        val realX = convertToRealX(fieldX).toInt()
+        val realY = convertToRealY(fieldY).toInt()
         this.position(realX, realY)
         placedBlocks.add(this)
         //println("RealX: $realX, RealY: $realY, Field: $fieldX, $fieldY")
