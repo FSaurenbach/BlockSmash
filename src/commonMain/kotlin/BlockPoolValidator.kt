@@ -64,57 +64,55 @@ class BlockPoolValidator {
             }
 
         }
-        var combinationList = mutableListOf<blockBlueprint>()
-        directBlocks.forEach {
-            combinationList.add(it)
-        }
+
         println("Amount of blocks that fit directly: $directFitCounter")
         if (directFitCounter < 3) {
             var validPool = true
             var currentBlock = 0
             for (block in directBlocks) {
+                val combinationList = mutableListOf<blockBlueprint>()
+                directBlocks.forEach {
+                    combinationList.add(it)
+                }
                 // Check individual blocks if placing them anywhere on the field can result in the problem blocks being placeable
                 for (positionPair in directBlockPL[currentBlock]) {
                     val field = copyBoard(gameField)
                     println("PLACING NEW:")
 
-                    printBlock(block)
-                    printBoard(field)
-                    for (blockRow in 0..2) {
-                        for (blockCol in 0..2) {
-                            if (block[blockRow][blockCol] == 1) {
-                                val targetRow = positionPair.first + blockRow
-                                val targetCol = positionPair.second + blockCol
-
-
-                                field[targetRow][targetCol] = 1
-
-
-
-                            }
-
-
-                        }
-                    }
+                    placeBlock(block, positionPair, field)
                     combinationList.remove(block)
                     println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
                     printBoard(field)
                     // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
                     if (checkForBlast(field)) {
-                        println(" There could technically be a combination. we have tested one")
                         //check if placement is possible now
-                        for (problem in problemBlocks){
-                            if (checkPossibleLocations(problem).isNotEmpty()){
+                        for (problem in problemBlocks) {
+                            if (checkPossibleLocations(problem).isNotEmpty()) {
                                 println("A PROBLEM CAN BE RESOLVED. NO FURTHER TESTING IS NEEDED.")
                                 problemBlocks.remove(problem)
                             }
                         }
-                        if (problemBlocks.isNotEmpty()){
-                            if (combinationList.isNotEmpty()){
-                                for (comb in combinationList){
+                        if (problemBlocks.isNotEmpty()) {
+                            if (combinationList.isNotEmpty()) {
+                                for (comb in combinationList) {
                                     var locs = checkPossibleLocations(comb)
-                                    if (locs.isNotEmpty()){
-
+                                    if (locs.isNotEmpty()) {
+                                        var integer = 0
+                                        for (positionPair in locs) {
+                                            placeBlock(block, positionPair, field)
+                                            println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
+                                            printBoard(field)
+                                            if (checkForBlast(field)) {
+                                                //check if placement is possible now
+                                                for (problem in problemBlocks) {
+                                                    if (checkPossibleLocations(problem).isNotEmpty()) {
+                                                        println("THERE IS A POSSIBLE COMBINATION.")
+                                                        validPool = true
+                                                        problemBlocks.remove(problem)
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -235,6 +233,26 @@ class BlockPoolValidator {
             }
         }
         return false
+    }
+
+    private fun placeBlock(block: blockBlueprint, positionPair: Pair<Int, Int>, field: Board) {
+        printBlock(block)
+        printBoard(field)
+        for (blockRow in 0..2) {
+            for (blockCol in 0..2) {
+                if (block[blockRow][blockCol] == 1) {
+                    val targetRow = positionPair.first + blockRow
+                    val targetCol = positionPair.second + blockCol
+
+
+                    field[targetRow][targetCol] = 1
+
+
+                }
+
+
+            }
+        }
     }
 }
 
