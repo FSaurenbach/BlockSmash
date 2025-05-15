@@ -8,3 +8,4 @@
 /deps
 .run
 /modules/
+.gradle/
