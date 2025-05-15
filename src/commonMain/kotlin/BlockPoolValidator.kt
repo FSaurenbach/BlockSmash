@@ -60,8 +60,6 @@ class BlockPoolValidator {
         }
 
         println("Amount of valid starting blocks: ${startingBlocks.count()}")
-        var validPool = true
-        var currentBlock = 0
 
         // Generate permutations(all possible placement combinations of the pieces)
         val permutationsList = mutableListOf<List<BlockBlueprint>>()
@@ -127,93 +125,6 @@ class BlockPoolValidator {
         return false
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        if (0 == 0) return validPool
-
-        // old check (bad)
-        for (block in startingBlocks) {
-            val combinationList = mutableListOf<BlockBlueprint>()
-            startingBlocks.forEach {
-                combinationList.add(it)
-            }
-            // Check individual blocks if placing them anywhere on the field can result in the problem blocks being placeable
-            for (positionPair in startingBlocksLocations[currentBlock]) {
-                val field = copyBoard(gameField)
-                //println("PLACING NEW:")
-
-                placeBlock(block, positionPair, field)
-                combinationList.remove(block)
-                //println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
-                //printBoard(field)
-                // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
-                if (checkForBlast(field)) {
-                    //check if placement is possible now
-                    val toRemove = mutableListOf<BlockBlueprint>()
-                    for (problem in problemBlocks) {
-                        if (checkPossibleLocations(problem, field).isNotEmpty()) {
-                            println("A PROBLEM CAN BE RESOLVED. NO FURTHER TESTING IS NEEDED.")
-                            toRemove.add(problem)
-                        }
-                    }
-                    problemBlocks.removeAll(toRemove)
-                    if (problemBlocks.isNotEmpty()) {
-                        if (combinationList.isNotEmpty()) {
-                            for (comb in combinationList) {
-                                val locs = checkPossibleLocations(comb, field)
-                                if (locs.isNotEmpty()) {
-                                    var integer = 0
-                                    for (positionPair in locs) {
-                                        placeBlock(comb, positionPair, field)
-                                        //println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
-                                        //printBoard(field)
-                                        if (checkForBlast(field)) {
-                                            //check if placement is possible now
-                                            val toRemove = mutableListOf<BlockBlueprint>()
-                                            for (problem in problemBlocks) {
-                                                if (checkPossibleLocations(problem, field).isNotEmpty()) {
-                                                    println("THERE IS A POSSIBLE COMBINATION.")
-                                                    validPool = true
-
-                                                }
-                                            }
-                                            problemBlocks.removeAll(toRemove)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                } else {
-
-                    validPool = false
-                }
-
-
-            }
-            currentBlock++
-        }/*If all problems have been resolved set the pool as valid!*/
-        if (problemBlocks.isEmpty()) validPool = true
-        return validPool
-
-
     }
 
     private fun checkPossibleLocations(block: BlockBlueprint, field: Board): MutableList<Pair<Int, Int>> {
@@ -264,10 +175,7 @@ class BlockPoolValidator {
         }
 
 
-
         //println("possibleLocations: $pLAmount")
-
-
 
 
         return pLList
