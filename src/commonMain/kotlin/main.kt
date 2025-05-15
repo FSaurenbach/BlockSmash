@@ -245,6 +245,7 @@ fun checkForBlast() {
 }
 
 fun updateScore(rowsBlasted: Int) {
+    if (rowsBlasted== 0) score+=5
     score += rowsBlasted * 15
     scoreCounter.text = RichTextData("$score", color = Colors.BLACK, textSize = 35f)
 

@@ -128,6 +128,7 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                         master.removeFromParent()
                         this.removeFromParent()
                         checkForBlast()
+                        updateScore(0)
 
                     }
 
