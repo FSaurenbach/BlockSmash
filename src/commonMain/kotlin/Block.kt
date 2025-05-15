@@ -178,9 +178,9 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
         if (array[2][2] == 1) {
             this.roundRect(Size(cs, cs), RectCorners(5f), fill = color).centerOn(cell33)
         }
-        println("c: ${this[0].globalPos}")
+        //println("c: ${this[0].globalPos}")
         if (this[0] is RoundRect) master = this[0] as RoundRect
-        println(this[9])
+        //println(this[9])
         cell11.removeFromParent()
         cell12.removeFromParent()
         cell13.removeFromParent()

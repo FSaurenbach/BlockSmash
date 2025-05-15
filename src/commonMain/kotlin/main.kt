@@ -112,7 +112,7 @@ fun populateField(container: Container) {
         rows[field.fieldY][field.fieldX].add(field)
     }
     first = fields[0]
-    println(rows)
+    //println(rows)
 
 }
 
@@ -161,6 +161,7 @@ fun createPieces(container: Container) {
         allBlocks.add(c)
 
     }
+
     bpv.checkPool(pool)
 }
 
