@@ -1,5 +1,5 @@
 typealias Board = Array<IntArray>
-typealias blockBlueprint = Array<Array<Int>>
+typealias BlockBlueprint = Array<Array<Int>>
 
 class BlockPoolValidator {
     private var gameField: Board = Array(8) { IntArray(8) { 0 } }
@@ -17,23 +17,23 @@ class BlockPoolValidator {
         }
     }
 
-    private fun printBlock(block: blockBlueprint) {
+    private fun printBlock(block: BlockBlueprint) {
         for (row in block) {
             println(row.joinToString(" ") { cell ->
                 if (cell == 0) "·" else "■"
             })
         }
+        println()
     }
 
     private fun copyBoard(src: Board): Board = Array(src.size) { row -> src[row].copyOf() }
 
     fun updateArray(): Board? {
         this.reset()
-        println("OCCUPIED FIELDS")
         for (field in occupiedFields) {
             gameField[field.fieldY][field.fieldX] = 1
         }
-        printBoard()
+        //printBoard()
         return null
     }
 
@@ -41,130 +41,99 @@ class BlockPoolValidator {
         gameField = Array(8) { IntArray(8) { 0 } }
     }
 
-    fun checkPool(pool: MutableList<blockBlueprint>): Boolean {
+    fun checkPool(pool: MutableList<BlockBlueprint>): Boolean {
         updateArray()
-        val blocks = mutableListOf<blockBlueprint>()
+        printBoard(gameField)
+
+        val startingBlocks = mutableListOf<BlockBlueprint>()
+        val startingBlocksLocations = mutableListOf<List<Pair<Int, Int>>>()
+        val problemBlocks = mutableListOf<BlockBlueprint>()
         for (block in pool) {
-            blocks.add(block)
-
-        }
-
-        var directFitCounter = 0
-        val directBlocks = mutableListOf<blockBlueprint>()
-        val directBlockPL = mutableListOf<List<Pair<Int, Int>>>()
-        val problemBlocks = mutableListOf<blockBlueprint>()
-        for (block in blocks) {
-            val pLList = checkPossibleLocations(block)
+            val pLList = checkPossibleLocations(block, gameField)
             if (pLList.isNotEmpty()) {
-                directFitCounter++
-                directBlocks.add(block)
-                directBlockPL.add(pLList)
+                startingBlocks.add(block)
+                startingBlocksLocations.add(pLList)
             } else {
                 problemBlocks.add(block)
             }
 
         }
 
-        println("Amount of blocks that fit directly: $directFitCounter")
-        if (directFitCounter < 3) {
-            var validPool = true
-            var currentBlock = 0
-            for (block in directBlocks) {
-                val combinationList = mutableListOf<blockBlueprint>()
-                directBlocks.forEach {
-                    combinationList.add(it)
+        println("Amount of valid starting blocks: ${startingBlocks.count()}")
+
+        // Generate permutations(all possible placement combinations of the pieces)
+        val permutationsList = mutableListOf<List<BlockBlueprint>>()
+        for (i in 0..2) {
+
+            val blockPool = mutableListOf<BlockBlueprint>();for (b in pool) blockPool.add(b)
+            val permutation = mutableListOf<BlockBlueprint>()
+            val permutationCopy = mutableListOf<BlockBlueprint>()
+            permutation.add(blockPool[i])
+            permutationCopy.add(blockPool[i])
+            blockPool.removeAt(i)
+
+            for (integer in 0..1) {
+                if (integer == 0) {
+                    permutation.add(blockPool[0])
+                    permutation.add(blockPool[1])
+                } else {
+                    permutationCopy.add(blockPool[1])
+                    permutationCopy.add(blockPool[0])
                 }
-                // Check individual blocks if placing them anywhere on the field can result in the problem blocks being placeable
-                for (positionPair in directBlockPL[currentBlock]) {
-                    val field = copyBoard(gameField)
-                    println("PLACING NEW:")
-
-                    placeBlock(block, positionPair, field)
-                    combinationList.remove(block)
-                    println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
-                    printBoard(field)
-                    // A BLOCK HAS BEEN PLACED. CHECK IF THE PROBLEM BLOCKS CAN BE PLACED AFTER CHECKING FOR A BLAST!!
-                    if (checkForBlast(field)) {
-                        //check if placement is possible now
-                        for (problem in problemBlocks) {
-                            if (checkPossibleLocations(problem).isNotEmpty()) {
-                                println("A PROBLEM CAN BE RESOLVED. NO FURTHER TESTING IS NEEDED.")
-                                problemBlocks.remove(problem)
-                            }
-                        }
-                        if (problemBlocks.isNotEmpty()) {
-                            if (combinationList.isNotEmpty()) {
-                                for (comb in combinationList) {
-                                    var locs = checkPossibleLocations(comb)
-                                    if (locs.isNotEmpty()) {
-                                        var integer = 0
-                                        for (positionPair in locs) {
-                                            placeBlock(block, positionPair, field)
-                                            println("Versuche Block-Platzierung bei row=${positionPair.first}, col=${positionPair.second}")
-                                            printBoard(field)
-                                            if (checkForBlast(field)) {
-                                                //check if placement is possible now
-                                                for (problem in problemBlocks) {
-                                                    if (checkPossibleLocations(problem).isNotEmpty()) {
-                                                        println("THERE IS A POSSIBLE COMBINATION.")
-                                                        validPool = true
-                                                        problemBlocks.remove(problem)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-
-                    } else {
-
-                        validPool = false
-                    }
-
-
-                }
-                currentBlock++
             }
-            /*If all problems have been resolved set the pool as valid!*/
-            if (problemBlocks.isEmpty()) validPool = true
-            return validPool
 
-        } else return true
+            permutationsList.add(permutation)
+            permutationsList.add(permutationCopy)
+        }
+        // Filter out all bad permutations!
+        val badCombinations = mutableListOf<List<BlockBlueprint>>()
+        for (combination in permutationsList) {
+            problemBlocks.forEach {
+                if (it.contentDeepEquals(combination[0])) {
+                    println("At least one permutation is bad.")
+                    badCombinations.add(combination)
+                }
+            }
+        }
+        permutationsList.removeAll(badCombinations)
+        for (combination in permutationsList) {
+            val possibleLocations0 = checkPossibleLocations(combination[0], gameField)
+            for (positionPair in possibleLocations0) {
+                val field = copyBoard(gameField)
+                placeBlock(combination[0], positionPair, field)
+                checkForBlast(field)
+                val possibleLocations1 = checkPossibleLocations(combination[1], gameField)
+                if (possibleLocations1.isNotEmpty()) {
+                    for (positionPair in possibleLocations1) {
+                        placeBlock(combination[1], positionPair, field)
+                        checkForBlast(field)
+                        val possibleLocations2 = checkPossibleLocations(combination[2], gameField)
+                        if (possibleLocations2.isNotEmpty()) {
+                            for (positionPair in possibleLocations2) {
+                                placeBlock(combination[2], positionPair, field)
+                                checkForBlast()
+                                println("VALID POOL!!")
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        println("INVALID POOL!!")
+        return false
+
+
     }
 
-    private fun checkPossibleLocations(block: blockBlueprint): MutableList<Pair<Int, Int>> {
-        var verticalLength = 0
-        var horizontalLength = 0
-        if (block[0][0] == 1 || block[1][0] == 1 || block[2][0] == 1) {
-            verticalLength++
-        }
-        if (block[0][1] == 1 || block[1][1] == 1 || block[2][1] == 1) {
-            verticalLength++
-        }
-        if (block[0][2] == 1 || block[1][2] == 1 || block[2][2] == 1) {
-            verticalLength++
-        }
-        // Horizontal Length
-        if (block[0][0] == 1 || block[0][1] == 1 || block[0][2] == 1) {
-            horizontalLength++
-        }
-        if (block[1][0] == 1 || block[1][1] == 1 || block[1][2] == 1) {
-            horizontalLength++
-        }
-        if (block[2][0] == 1 || block[2][1] == 1 || block[2][2] == 1) {
-            horizontalLength++
-        }
+    private fun checkPossibleLocations(block: BlockBlueprint, field: Board): MutableList<Pair<Int, Int>> {
 
-        println("VERTICAL LENGTH: $verticalLength")
-        println("HORIZONTAL LENGTH: $horizontalLength")
-        for (row in block) {
+        /*for (row in block) {
             println(row.joinToString(" ") { cell ->
                 if (cell == 0) "·" else "■"
             })
-        }
+        }*/
         var pLAmount = 0 /*Amount of possible locations*/
         val pLList = mutableListOf<Pair<Int, Int>>() /*List of possible locations*/
 
@@ -186,7 +155,7 @@ class BlockPoolValidator {
                                 break
                             }
 
-                            if (gameField[targetRow][targetCol] == 0) {
+                            if (field[targetRow][targetCol] == 0) {
                                 amount++
                             } else {
                                 valid = false
@@ -206,17 +175,14 @@ class BlockPoolValidator {
         }
 
 
-
-        println("possibleLocations: $pLAmount")
-
-
+        //println("possibleLocations: $pLAmount")
 
 
         return pLList
     }
 
     private fun checkForBlast(field: Board): Boolean {
-
+        var blast = false
         for (row in 0..7) {
             val ocpFields = mutableListOf<Pair<Int, Int>>()
             for (col in 0..7) {
@@ -229,15 +195,30 @@ class BlockPoolValidator {
                     field[r][c] = 0
 
                 }
-                return true
+                blast = true
             }
         }
-        return false
+        for (col in 0..7) {
+            val ocpFields = mutableListOf<Pair<Int, Int>>()
+            for (row in 0..7) {
+                if (field[row][col] == 1) {
+                    ocpFields.add(Pair(row, col))
+                }
+            }
+            if (ocpFields.count() == 8) {
+                for ((r, c) in ocpFields) {
+                    field[r][c] = 0
+
+                }
+                blast = true
+            }
+        }
+        return blast
     }
 
-    private fun placeBlock(block: blockBlueprint, positionPair: Pair<Int, Int>, field: Board) {
-        printBlock(block)
-        printBoard(field)
+    private fun placeBlock(block: BlockBlueprint, positionPair: Pair<Int, Int>, field: Board) {
+        //printBlock(block)
+        //printBoard(field)
         for (blockRow in 0..2) {
             for (blockCol in 0..2) {
                 if (block[blockRow][blockCol] == 1) {

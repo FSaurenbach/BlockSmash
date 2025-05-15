@@ -33,8 +33,8 @@ val middleStart = Point(windowWidth * 0.4, windowHeight * 0.8)
 val rightStart = Point(windowWidth * 0.6, windowHeight * 0.8)
 var score: Int = 0
 var scoreCounter: TextBlock by Delegates.notNull()
-var scoreBG:RoundRect by Delegates.notNull()
-var bpv:BlockPoolValidator by Delegates.notNull()
+var scoreBG: RoundRect by Delegates.notNull()
+var bpv: BlockPoolValidator by Delegates.notNull()
 suspend fun main() = Korge(
     windowSize = Size(windowWidth, windowHeight),
     title = "Block Smash",
@@ -68,7 +68,7 @@ suspend fun main() = Korge(
         size = scoreFieldBg.size
 
     }
-    scoreBG= roundRect(Size(0.15 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
+    scoreBG = roundRect(Size(0.15 * windowWidth, 0.05 * windowHeight), RectCorners(5f), Colors.BEIGE)
     scoreBG.centerXOn(scoreFieldBg)
     scoreBG.alignTopToBottomOf(scoreFieldBg)
     scoreCounter = scoreBG.textBlock {
@@ -80,7 +80,10 @@ suspend fun main() = Korge(
     populateField(this)
     initBlockTypes()
     //val testBlock = block(BlockColors.Red, BlockType.TWObyTWO, StartPosition.LEFT)
-    createPieces(this)
+    while (!createPieces(this)){
+
+    }
+
 
 
 }
@@ -112,7 +115,7 @@ fun populateField(container: Container) {
         rows[field.fieldY][field.fieldX].add(field)
     }
     first = fields[0]
-    println(rows)
+    //println(rows)
 
 }
 
@@ -133,9 +136,16 @@ fun convertToCoordinateY(realY: Int): Int {
     return round((realY - backgroundField.y) / cs).toInt()
 }
 
-fun createPieces(container: Container) {
+fun createPieces(container: Container):Boolean {
     var location: StartPosition? = null
     val pool = mutableListOf<Array<Array<Int>>>()
+    val randomBlocks = mutableListOf<Array<Array<Int>>>()
+    for (i in 0..2) {
+        val randomBlock = allBlockTypes.random()
+        randomBlocks.add(randomBlock)
+        pool.add(randomBlock)
+    }
+    if (!bpv.checkPool(pool)) return false
     for (i in 0..2) {
 
         when {
@@ -155,17 +165,23 @@ fun createPieces(container: Container) {
             }
         }
         val color = BlockColors.getRandomColor()
-        val randomBlock = allBlockTypes.random()
-        pool.add(randomBlock)
-        val c = container.block(color, randomBlock, location!!)
+
+        val c = container.block(color, randomBlocks[i], location!!)
         allBlocks.add(c)
 
     }
-    bpv.checkPool(pool)
+    return true
+
+
 }
 
 fun addNewPieces() {
-    if (!leftOccupied && !middleOccupied && !rightOccupied) createPieces(sContainer)
+    if (!leftOccupied && !middleOccupied && !rightOccupied){
+        while (!createPieces(sContainer)){
+
+        }
+    //createPieces(sContainer)
+    }
 }
 
 
@@ -227,8 +243,9 @@ fun checkForBlast() {
 
 
 }
-fun updateScore(rowsBlasted:Int){
-    score += rowsBlasted*15
-    scoreCounter.text =  RichTextData("$score", color = Colors.BLACK, textSize = 35f)
+
+fun updateScore(rowsBlasted: Int) {
+    score += rowsBlasted * 15
+    scoreCounter.text = RichTextData("$score", color = Colors.BLACK, textSize = 35f)
 
 }
