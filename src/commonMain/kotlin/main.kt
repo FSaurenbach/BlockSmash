@@ -120,20 +120,20 @@ fun populateField(container: Container) {
 }
 
 
-fun convertToRealX(fieldCoordinate: Int): Number {
-    return backgroundField.x + cs * fieldCoordinate
-}
-
-fun convertToRealY(fieldCoordinate: Int): Number {
-    return backgroundField.y + cs * fieldCoordinate
-}
-
 fun convertToCoordinateX(realX: Int): Int {
-    return round((realX - backgroundField.x) / cs).toInt()
+    return ((realX - backgroundField.x) / cs).roundToInt() // Use roundToInt for consistency
 }
 
 fun convertToCoordinateY(realY: Int): Int {
-    return round((realY - backgroundField.y) / cs).toInt()
+    return ((realY - backgroundField.y) / cs).roundToInt() // Use roundToInt for consistency
+}
+
+fun convertToRealX(coordinateX: Int): Int {
+    return (coordinateX * cs + backgroundField.x).toInt()
+}
+
+fun convertToRealY(coordinateY: Int): Int {
+    return (coordinateY * cs + backgroundField.y).toInt()
 }
 
 fun createPieces(container: Container):Boolean {

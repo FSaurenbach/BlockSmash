@@ -110,8 +110,8 @@ class Block(private var color: RGBA, blockType: Array<Array<Int>>, startPosition
                         this.forEachChild {
                             sContainer.placedBlock(
                                 color,
-                                convertToCoordinateX(it.globalPos.x.toInt()),
-                                convertToCoordinateY(it.globalPos.y.toInt())
+                                convertToCoordinateX(it.globalPos.x.roundToInt()), // Use roundToInt for consistency
+                                convertToCoordinateY(it.globalPos.y.roundToInt())  // Use roundToInt for consistency
                             )
                         }
                         placed = true
@@ -200,7 +200,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
     val testsToPass = wholeBlock.children.count()
     //println("tests to pass: $testsToPass")
     var testsPassed = 0
-
+    val tempOccupiedFields = mutableListOf<Field>()
     for (block in wholeBlock.children) {
         val blockPosition1 = Point(
             convertToCoordinateX(round(block.globalPos.x).toInt()), convertToCoordinateY(
@@ -217,7 +217,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
 
             if (blockPosition1 == fieldPosition && !field.occupied) {
                 testsPassed++
-                occupiedFields.add(field)
+                tempOccupiedFields.add(field)
             }
 
 
@@ -225,6 +225,7 @@ fun checkIfCorrectlyPlaced(wholeBlock: Block): Boolean {
 
     }
     if (testsPassed == testsToPass) {
+        occupiedFields.addAll(tempOccupiedFields)
         for (field in occupiedFields) {
             field.occupied = true
         }
